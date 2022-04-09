@@ -14,23 +14,23 @@
 
 `首页`
 
-![image-20220409195326189](F:\build_projects\myblog\README.assets\image-20220409195326189.png)
+![image-20220409195326189](https://github.com/mangohow/myblog/blob/master/README.assets/image-20220409195326189.png)
 
-![image-20220409195336045](F:\build_projects\myblog\README.assets\image-20220409195336045.png)
+![image-20220409195336045](https://github.com/mangohow/myblog/blob/master/README.assets/image-20220409195336045.png)
 
 `文章标签`
 
-![image-20220409195405913](F:\build_projects\myblog\README.assets\image-20220409195405913.png)
+![image-20220409195405913](https://github.com/mangohow/myblog/blob/master/README.assets/image-20220409195405913.png)
 
 `归档`
 
-![image-20220409195420221](F:\build_projects\myblog\README.assets\image-20220409195420221.png)
+![image-20220409195420221](https://github.com/mangohow/myblog/blob/master/README.assets/image-20220409195420221.png)
 
 `后台管理`
 
-![image-20220409195441357](F:\build_projects\myblog\README.assets\image-20220409195441357.png)
+![image-20220409195441357](https://github.com/mangohow/myblog/blob/master/README.assets/image-20220409195441357.png)
 
-![image-20220409195452989](F:\build_projects\myblog\README.assets\image-20220409195452989.png)
+![image-20220409195452989](https://github.com/mangohow/myblog/blob/master/README.assets/image-20220409195452989.png)
 
 
 
@@ -47,47 +47,26 @@
 myblog/                                                                                                                               
 
 ├── conf                                                                                                                              
-
 │  	 └── conf.json                                                                                                                     
-
 ├── db                                                                                                                                
-
-│  	  ├── dao                                                                                                                                                                                                                                     
-
-│        └── service  
-
+│  	 ├── dao                                                                                                                            
+│    └── service  
 ├── logs
-
 ├── model    
-
 ├── router                                                                                                                            
-
-│        ├── admin                                                                                                                                                                                                                                  
-
+│    ├── admin                                                                                                                                                         
 └── utils              
-
 ├── images                                                                                                                            
-
-│        ├── avatar                                                                                                                                                                                                                                    
-
-│        ├── blogImages                                                                                                                                                                                                   
-
-│        ├── icons                                                                                                                                                                                                                        
-
+│    ├── avatar                                                                                                                                                     
+│    ├── blogImages                                                                                                                                                     
+│    ├── icons                                                                                                                                                         
 ├── Dockerfile                                                                                                                        
-
 ├── go.mod                                                                                                                            
-
-├── go.sum                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
-
+├── go.sum                                                                                                                                                             
 ├── main.go 
 
 2、将编译好的前端文件放入deploy/frontend/blog下
 
 3、执行deploy下的start脚本
 
-​                                                                                                                          
-
-​                                                                                                                                                                                                                                             
-
-​                                                                                                                      
+                                                                                                                   
