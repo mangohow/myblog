@@ -44,26 +44,22 @@
 
 目录如下：
 
-myblog/                                                                                                                               
-
-├── conf                                                                                                                              
-│    └── conf.json                                                                                                                     
-├── db                                                                                                                                
-│    ├── dao                                                                                                                            
-│    └── service  
-├── logs
-├── model    
-├── router                                                                                                                            
-│     ├── admin                                                                                                                                                       
-└── utils              
-├── images                                                                                                                            
-│    ├── avatar                                                                                                                                                     
-│    ├── blogImages                                                                                                                                                 
-│    ├── icons                                                                                                                                                       
-├── Dockerfile                                                                                                                        
-├── go.mod                                                                                                                            
-├── go.sum                                                                                                                                                             
-├── main.go 
+myblog/  
+├── conf  
+├── db  
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── dao  
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── service  
+├── images  
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── avatar  
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── blogImages  
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── firstPic  
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── icons  
+├── logs  
+├── model  
+├── router  
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── admin  
+└── utils  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── logger  
 
 2、将编译好的前端文件放入deploy/frontend/blog下
 
