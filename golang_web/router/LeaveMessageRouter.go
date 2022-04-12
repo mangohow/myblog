@@ -30,7 +30,7 @@ func (l *LeaveMessageRouter) LeaveMessage(ctx *gin.Context) {
 	}
 
 	// 在使用nginx作为反向代理时，需要在nginx中进行配置，添加客户端的真实IP到头部，以便web服务器获取
-	msg.Ip = ctx.GetHeader("Client-addr")
+	msg.Ip = ctx.GetHeader("Host")
 	if (msg.Ip == "") {
 		msg.Ip = ctx.Request.RemoteAddr
 	}

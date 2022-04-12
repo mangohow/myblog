@@ -40,7 +40,7 @@
 
 步骤如下：
 
-1、将博客后端放入deploy/backend下，然后修改conf文件夹下的配置文件
+1、将博客后端放入deploy/backend下
 
 目录如下：
 
@@ -61,8 +61,12 @@ myblog/
 └── utils  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── logger  
 
-2、将编译好的前端文件放入deploy/frontend/blog下
+2、修改前端main.js的defaultUrl为你服务器的ip，将编译好的前端文件放入deploy/frontend/blog下
 
 3、执行deploy下的start脚本
 
-                                                                                                                   
+./start.sh serve [serverip] 
+
+例如： ./start.sh serve http://192.168.44.100
+
+​                                                                                                                   

@@ -10,8 +10,10 @@ WORKDIR /build
 
 COPY . .
 
-RUN go mod download \
-    go build -ldflags="-s -w" -o /app/blog_web ./main.go
+WORKDIR /build/golang_web
+
+RUN go mod download 
+RUN go build -ldflags="-s -w" -o /app/blog_web 
 
 
 # 该镜像用于运行web程序
@@ -23,7 +25,8 @@ ENV TZ=Asia/Shanghai
 
 WORKDIR /app
 
-COPY --from=builder /app/blog_web /app/blog_web
+COPY --from=builder /app/blog_web /app/
+COPY --from=builder /build/conf/conf.json /app/conf/
 
 EXPOSE 8080
 
