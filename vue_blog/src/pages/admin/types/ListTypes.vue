@@ -62,7 +62,6 @@ export default {
     methods: {
         getTypeList: async function() {
             const{data: res} = await this.$axios.get("/admin/getPageTypes", {params: this.queryInfo})
-            // console.log(res)
             if(res.status == 1) {
                 this.types = res.data;
                 this.types.total = res.total
@@ -80,7 +79,6 @@ export default {
             }
 
             const{data: res} = await this.$axios.get("/admin/checkTypeExist", {params: {typeName:this.inputType} });
-            //console.log(res)
             if(res.status == 1) {
                 if(res.data == true) {
                     this.addBtnDisabled = true;
@@ -108,7 +106,6 @@ export default {
                     this.$message.error("删除失败");
                 }
                 this.getTypeList();
-                //console.log("删除")
             }, () => {
                 this.$message({type: 'info', message: '已取消删除'});
             });

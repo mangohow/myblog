@@ -93,8 +93,7 @@ ul, li {
 
 //标题区域
 .title-area {
-    background: url("../assets/images/back5.png") 0 0 / cover no-repeat;
-    background-position: 0 -380px;
+    background: url("../assets/images/back5__2496_520.png") 0 0 / cover no-repeat;
 }
 
 //下方整个区域

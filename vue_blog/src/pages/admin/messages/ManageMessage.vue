@@ -51,7 +51,6 @@ export default {
     methods: {
         async getMessageList() {
             const {data:res} = await this.$axios.get("/admin/msgList", {params: this.queryInfo});
-            console.log(res)
             if(res.data) {
                 this.messages.splice(0, this.messages.length)
                 this.messages.push(...res.data)

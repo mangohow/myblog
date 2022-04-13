@@ -29,8 +29,7 @@ export default {
 <style scoped>
 
 .title-area {
-    background: url("../assets/images/back1.png") 0 0 / cover  no-repeat;
-    background-position: 0 -620px;
+    background: url("../assets/images/back1_3840_800.png") 0 0 / cover  no-repeat;
 }
 
 .main {

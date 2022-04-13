@@ -135,7 +135,6 @@ export default {
             const {data: res} = await this.$axios.get("/myblog/tagBlogList", {params: this.queryInfo});
             if(res.status === 1) {
                 this.blogDetails = res.data;
-                console.log(res)
             } else {
                 this.$message.error("获取博客失败，请重试")
                 return

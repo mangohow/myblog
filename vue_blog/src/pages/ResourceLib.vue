@@ -80,8 +80,7 @@ ul, li {
 }
 
 .title-area {
-    background: url("../assets/images/back4.png") 0 0 / cover  no-repeat;
-    background-position: 0 -620px;
+    background: url("../assets/images/back4_3840_800.png") 0 0 / cover  no-repeat;
 }
 
 .main {

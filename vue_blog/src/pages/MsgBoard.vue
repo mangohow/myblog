@@ -149,8 +149,7 @@ export default {
 <style scoped>
 
 .title-area {
-    background: url("../assets/images/bg10.jpg") 0 0 / cover  no-repeat;
-    background-position: 0 -550px;
+    background: url("../assets/images/bg10_2560_534.jpg") 0 0 / cover  no-repeat;
 }
 
 .main {

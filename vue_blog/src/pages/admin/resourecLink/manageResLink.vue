@@ -128,7 +128,6 @@ export default {
     methods: {
         async getLinkList() {
             const {data:res} = await this.$axios.get("/admin/pageLinks", {params: this.queryInfo});
-            console.log(res)
             if(res.status !== 1) {
                 this.$message.error("获取列表失败，请重试！")
                 return
@@ -156,13 +155,11 @@ export default {
             this.categories = res.data
         },
         changeCategory(name) {
-            console.log(name)
             this.selectedCategory = name
             const val = this.categories.find(item => {
                 return item.name === name
             })
             this.postInfo.categoryId = val.id
-            console.log(this.postInfo)
         },
         async handleAdd() {
             this.postInfo.id = 0

@@ -99,8 +99,7 @@ ul, li {
 }
 
 .title-area {
-    background: url("../assets/images/blog_bg.png") 0 0 / cover  no-repeat;
-    background-position: 0 -300px;
+    background: url("../assets/images/blog_bg_1280_300.png") 0 0 / cover  no-repeat;
 }
 
 .main {

@@ -238,7 +238,6 @@ export default {
             const {data:res} = await this.$axios.get("/myblog/newBlogs", {params: {countLimit: 10}});
             if(res.status === 1) {
                 this.newRecommend.list = res.data;
-                console.log(res)
             } else {
                 this.$message.warning("获取最新推荐失败！")
             }
