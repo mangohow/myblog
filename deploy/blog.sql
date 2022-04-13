@@ -326,6 +326,6 @@ CREATE TABLE `t_user`  (
 -- ----------------------------
 -- Records of t_user user admin password:123456
 -- ----------------------------
-INSERT INTO `t_user` VALUES (1, 'unknown', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '691639910@qq.com', 'http://192.168.44.100/images/firstPic/avatar1.png', 1, '2021-02-01 18:25:26', '2022-03-02 11:52:19', 'https://www.baidu.com/', 'https://blog.csdn.net/Peerless__?type=blog');
+INSERT INTO `t_user` VALUES (1, 'unknown', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '123456@qq.com', 'http://192.168.44.100/images/firstPic/avatar1.png', 1, '2021-02-01 18:25:26', '2022-03-02 11:52:19', 'https://www.baidu.com/', 'https://blog.csdn.net/Peerless__?type=blog');
 
 SET FOREIGN_KEY_CHECKS = 1;
