@@ -16,7 +16,7 @@ func NewUserDao() *UserDao {
 	return &UserDao{
 		sql: []string{
 			`SELECT * FROM t_user WHERE username = ? AND password = ?;`,
-			`SELECT avatar, nickname, github, csdn FROM t_user Limit 1`,
+			`SELECT nickname, email, avatar, github, csdn FROM t_user Limit 1`,
 		},
 	}
 }
