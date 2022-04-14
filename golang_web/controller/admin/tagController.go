@@ -14,22 +14,22 @@ import (
 * @Desc:
  */
 
-type TagRouter struct {
+type TagController struct {
 	tagService *service.TagService
 }
 
-func NewTagRouter() *TagRouter {
-	return &TagRouter{
+func NewTagRouter() *TagController {
+	return &TagController{
 		tagService: service.NewTagService(),
 	}
 }
 
-func (t *TagRouter) GetAllTags(ctx *gin.Context) {
+func (t *TagController) GetAllTags(ctx *gin.Context) {
 	tags := t.tagService.GetAllTags()
 	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, tags))
 }
 
-func (t *TagRouter) GetOnePageTags(ctx *gin.Context) {
+func (t *TagController) GetOnePageTags(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "5")
 	tags, count := t.tagService.GetOnePageTags(pageNum, pageSize)
@@ -38,13 +38,13 @@ func (t *TagRouter) GetOnePageTags(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (t *TagRouter) CheckTagExist(ctx *gin.Context) {
+func (t *TagController) CheckTagExist(ctx *gin.Context) {
 	name := ctx.Query("name")
 	exist := t.tagService.CheckTagExist(name)
 	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, exist))
 }
 
-func (t *TagRouter) DeleteTag(ctx *gin.Context) {
+func (t *TagController) DeleteTag(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	ok := t.tagService.DeleteTagById(id)
 	if !ok {
@@ -55,7 +55,7 @@ func (t *TagRouter) DeleteTag(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
 }
 
-func (t *TagRouter) UpdateTag(ctx *gin.Context) {
+func (t *TagController) UpdateTag(ctx *gin.Context) {
 	var tag model.Tag
 	if err := ctx.ShouldBind(&tag); err != nil {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
@@ -71,7 +71,7 @@ func (t *TagRouter) UpdateTag(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
 }
 
-func (t *TagRouter) AddTag(ctx *gin.Context) {
+func (t *TagController) AddTag(ctx *gin.Context) {
 	var tag model.Tag
 	if err := ctx.ShouldBind(&tag); err != nil {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))

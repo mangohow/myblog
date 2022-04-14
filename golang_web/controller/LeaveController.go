@@ -1,4 +1,4 @@
-package router
+package controller
 
 import (
 	"blog_web/db/service"
@@ -9,18 +9,18 @@ import (
 	"time"
 )
 
-type LeaveMessageRouter struct {
+type LeaveMessageController struct {
 	messageService *service.LeaveMessageService
 }
 
-func NewLeaveMessageRouter() *LeaveMessageRouter {
-	return &LeaveMessageRouter{
+func NewLeaveMessageRouter() *LeaveMessageController {
+	return &LeaveMessageController{
 		messageService: service.NewLeaveMessageService(),
 	}
 }
 
 
-func (l *LeaveMessageRouter) LeaveMessage(ctx *gin.Context) {
+func (l *LeaveMessageController) LeaveMessage(ctx *gin.Context) {
 	var msg model.Message
 	err := ctx.ShouldBind(&msg)
 	if err != nil {
@@ -44,7 +44,7 @@ func (l *LeaveMessageRouter) LeaveMessage(ctx *gin.Context) {
 	}
 }
 
-func (l *LeaveMessageRouter) DisplayMessage(ctx *gin.Context) {
+func (l *LeaveMessageController) DisplayMessage(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
 

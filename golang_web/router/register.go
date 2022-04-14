@@ -1,12 +1,18 @@
 package router
 
 import (
-	"blog_web/router/admin"
+	"blog_web/controller"
+	"blog_web/controller/admin"
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterBlogRouters(engine *gin.Engine) {
-	homeRouter := NewHomeRouter()
+func Register(engine *gin.Engine) {
+	registerBlogRouters(engine)
+	registerBlogManageRouter(engine)
+}
+
+func registerBlogRouters(engine *gin.Engine) {
+	homeRouter := controller.NewHomeRouter()
 	blogGroup := engine.Group("/api/myblog")
 	{
 		blogGroup.GET("/blogLists", homeRouter.HomeListBlogs)
@@ -21,42 +27,42 @@ func RegisterBlogRouters(engine *gin.Engine) {
 		blogGroup.GET("/search", homeRouter.SearchBlog)
 	}
 
-	typeListRouter := NewTypeListRouter()
+	typeListRouter := controller.NewTypeListRouter()
 	{
 		blogGroup.GET("/typeList", typeListRouter.GetTypeList)
 		blogGroup.GET("/typeBlogList", typeListRouter.GetBlogListByTypeid)
 	}
 
-	tagListRouter := NewTagListRouter()
+	tagListRouter := controller.NewTagListRouter()
 	{
 		blogGroup.GET("/tagList", tagListRouter.GetTagList)
 		blogGroup.GET("/tagBlogList", tagListRouter.GetBlogListByTagId)
 	}
 
-	timeLineRouter := NewTimeLineRouter()
+	timeLineRouter := controller.NewTimeLineRouter()
 	{
 		blogGroup.GET("/timeLine", timeLineRouter.GetTimeLinedBlogs)
 		blogGroup.GET("/staticsBlog", timeLineRouter.GetGroupedBlogs)
 	}
 
-	resourceLibRouter := NewResourceLibRouter()
+	resourceLibRouter := controller.NewResourceLibRouter()
 	{
 		blogGroup.GET("/links", resourceLibRouter.LinkList)
 	}
 
-	leaveMessageRouter := NewLeaveMessageRouter()
+	leaveMessageRouter := controller.NewLeaveMessageRouter()
 	{
 		blogGroup.POST("/leaveMsg", leaveMessageRouter.LeaveMessage)
 		blogGroup.GET("/displayMsg", leaveMessageRouter.DisplayMessage)
 	}
 
-	essayRouter := NewEssayRouter()
+	essayRouter := controller.NewEssayRouter()
 	{
 		blogGroup.GET("/essayList", essayRouter.EssayList)
 	}
 }
 
-func RegisterBlogManageRouter(engine *gin.Engine) {
+func registerBlogManageRouter(engine *gin.Engine) {
 	loginRouter := admin.NewLoginRouter()
 	engine.POST("/api/admin/login", loginRouter.Login)
 

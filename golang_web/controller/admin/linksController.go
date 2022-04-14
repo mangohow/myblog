@@ -8,17 +8,17 @@ import (
 	"net/http"
 )
 
-type LinksRouter struct {
+type LinksController struct {
 	linkService *service.LinkService
 }
 
-func NewLinksRouter() *LinksRouter {
-	return &LinksRouter{
+func NewLinksRouter() *LinksController {
+	return &LinksController{
 		linkService: service.NewLinkService(),
 	}
 }
 
-func (l *LinksRouter) LinksList(ctx *gin.Context) {
+func (l *LinksController) LinksList(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
 
@@ -35,7 +35,7 @@ func (l *LinksRouter) LinksList(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (l *LinksRouter) DeleteLink(ctx *gin.Context) {
+func (l *LinksController) DeleteLink(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	err := l.linkService.DeleteLink(id)
 	if err != nil {
@@ -46,7 +46,7 @@ func (l *LinksRouter) DeleteLink(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
 }
 
-func (l *LinksRouter) UpdateLink(ctx *gin.Context) {
+func (l *LinksController) UpdateLink(ctx *gin.Context) {
 	var link model.Link
 	err := ctx.ShouldBind(&link)
 	if err != nil {
@@ -64,7 +64,7 @@ func (l *LinksRouter) UpdateLink(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
 }
 
-func (l *LinksRouter) AddLink(ctx *gin.Context) {
+func (l *LinksController) AddLink(ctx *gin.Context) {
 	var link model.Link
 	err := ctx.ShouldBind(&link)
 	if err != nil {
@@ -82,12 +82,12 @@ func (l *LinksRouter) AddLink(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
 }
 
-func (l *LinksRouter) Categories(ctx *gin.Context) {
+func (l *LinksController) Categories(ctx *gin.Context) {
 	categories := l.linkService.GetAllCategory()
 	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, categories))
 }
 
-func (l *LinksRouter) DeleteCategory(ctx *gin.Context) {
+func (l *LinksController) DeleteCategory(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	err := l.linkService.DeleteCategory(id)
 	if err != nil {
@@ -98,7 +98,7 @@ func (l *LinksRouter) DeleteCategory(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
 }
 
-func (l *LinksRouter) UpdateCategory(ctx *gin.Context) {
+func (l *LinksController) UpdateCategory(ctx *gin.Context) {
 	var category model.LinkCategory
 	err := ctx.ShouldBind(&category)
 	if err != nil {
@@ -116,7 +116,7 @@ func (l *LinksRouter) UpdateCategory(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
 }
 
-func (l *LinksRouter) AddCategory(ctx *gin.Context) {
+func (l *LinksController) AddCategory(ctx *gin.Context) {
 	var category model.LinkCategory
 	err := ctx.ShouldBind(&category)
 	if err != nil {

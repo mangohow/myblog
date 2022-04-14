@@ -28,8 +28,7 @@ func main() {
 	engine.Use(gin.LoggerWithWriter(utils.Logger().Out), gin.Recovery())
 	engine.Static("/images", utils.GlobalServerConf.Server.ImagePath + "/images")
 
-	router.RegisterBlogRouters(engine)
-	router.RegisterBlogManageRouter(engine)
+	router.Register(engine)
 
 	addr := fmt.Sprintf("%s:%d", utils.GlobalServerConf.Server.Host, utils.GlobalServerConf.Server.Port)
 	defer dao.CloseMysqlConn()

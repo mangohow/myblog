@@ -7,7 +7,7 @@
   },
 
   "mysql": {
-    "data_source_name": "root:mgh99999@(127.0.0.1:3306)/blog?charset=utf8mb4&parseTime=true&loc=Local",
+    "data_source_name": "root:abc_123@(192.168.44.100:3306)/blog?charset=utf8mb4&parseTime=true&loc=Local",
     "max_open_conns": 20,
     "max_idle_conns": 10
   },

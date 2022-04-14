@@ -1,4 +1,4 @@
-package router
+package controller
 
 import (
 	"blog_web/db/service"
@@ -13,23 +13,23 @@ import (
 * @Desc:
  */
 
-type TimeLineRouter struct {
+type TimeLineController struct {
 	blogService *service.BlogService
 }
 
-func NewTimeLineRouter() *TimeLineRouter {
-	return &TimeLineRouter{
+func NewTimeLineRouter() *TimeLineController {
+	return &TimeLineController{
 		blogService: service.NewBlogService(),
 	}
 }
 
 // 时间线页面获取博客
-func (t *TimeLineRouter) GetTimeLinedBlogs(ctx *gin.Context) {
+func (t *TimeLineController) GetTimeLinedBlogs(ctx *gin.Context) {
 	blogs := t.blogService.GetTimeLineBlogs()
 	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, blogs))
 }
 
-func (t *TimeLineRouter) GetGroupedBlogs(ctx *gin.Context) {
+func (t *TimeLineController) GetGroupedBlogs(ctx *gin.Context) {
 	types := t.blogService.GetTypeAndBlogCount()
 	if types == nil {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))

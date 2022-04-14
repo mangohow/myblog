@@ -9,17 +9,17 @@ import (
 	"time"
 )
 
-type EssayRouter struct {
+type EssayController struct {
 	essayService *service.EssayService
 }
 
-func NewEssayRouter() *EssayRouter {
-	return &EssayRouter{
+func NewEssayRouter() *EssayController {
+	return &EssayController{
 		essayService: service.NewEssayService(),
 	}
 }
 
-func (e *EssayRouter) EssayList(ctx *gin.Context) {
+func (e *EssayController) EssayList(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
 	essays := e.essayService.GetLimited(pageNum, pageSize)
@@ -29,7 +29,7 @@ func (e *EssayRouter) EssayList(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (e *EssayRouter) AddEssay(ctx *gin.Context) {
+func (e *EssayController) AddEssay(ctx *gin.Context) {
 	var essay model.Essay
 	err := ctx.ShouldBind(&essay)
 	if err != nil {
@@ -48,7 +48,7 @@ func (e *EssayRouter) AddEssay(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
 }
 
-func (e *EssayRouter) DeleteEssay(ctx *gin.Context) {
+func (e *EssayController) DeleteEssay(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	if (id <= 0) {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
@@ -63,7 +63,7 @@ func (e *EssayRouter) DeleteEssay(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
 }
 
-func (e *EssayRouter) UpdateEssay(ctx *gin.Context) {
+func (e *EssayController) UpdateEssay(ctx *gin.Context) {
 	var essay model.Essay
 	err := ctx.ShouldBind(&essay)
 	if err != nil {

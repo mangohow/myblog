@@ -15,19 +15,19 @@ import (
 * @Desc:
  */
 
-type BlogRouter struct {
+type BlogController struct {
 	blogService *service.BlogService
 	mottoService *service.MottoService
 }
 
-func NewBlogRouter() *BlogRouter {
-	return &BlogRouter{
+func NewBlogRouter() *BlogController {
+	return &BlogController{
 		blogService: service.NewBlogService(),
 		mottoService: service.NewMottoService(),
 	}
 }
 
-func (b *BlogRouter) SearchBlogs(ctx *gin.Context) {
+func (b *BlogController) SearchBlogs(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "5")
 	blogTitle := ctx.Query("blogTitle")
@@ -40,7 +40,7 @@ func (b *BlogRouter) SearchBlogs(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (b *BlogRouter) DeleteBlog(ctx *gin.Context) {
+func (b *BlogController) DeleteBlog(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	ok := b.blogService.DeleteBlog(id)
 	if !ok {
@@ -51,7 +51,7 @@ func (b *BlogRouter) DeleteBlog(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
 }
 
-func (b *BlogRouter) GetFullBlog(ctx *gin.Context) {
+func (b *BlogController) GetFullBlog(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 
 	blogs, tags := b.blogService.GetFullBlog(id)
@@ -60,7 +60,7 @@ func (b *BlogRouter) GetFullBlog(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (b *BlogRouter) AddBlog(ctx *gin.Context) {
+func (b *BlogController) AddBlog(ctx *gin.Context) {
 	var blog model.FullBlog
 	err := ctx.ShouldBind(&blog)
 	if err != nil {
@@ -90,7 +90,7 @@ func (b *BlogRouter) AddBlog(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
 }
 
-func (b *BlogRouter) MottoList(ctx *gin.Context) {
+func (b *BlogController) MottoList(ctx *gin.Context) {
 	mottos := b.mottoService.GetAllMottoWithCreateTime()
 	if mottos == nil {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
@@ -100,7 +100,7 @@ func (b *BlogRouter) MottoList(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, mottos))
 }
 
-func (b *BlogRouter) AddMotto(ctx *gin.Context) {
+func (b *BlogController) AddMotto(ctx *gin.Context) {
 	var motto model.Motto
 	err := ctx.ShouldBind(&motto)
 	if err != nil {
@@ -120,7 +120,7 @@ func (b *BlogRouter) AddMotto(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
 }
 
-func (b *BlogRouter) DeleteMotto(ctx *gin.Context) {
+func (b *BlogController) DeleteMotto(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	if id == 0 {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
@@ -137,7 +137,7 @@ func (b *BlogRouter) DeleteMotto(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
 }
 
-func (b *BlogRouter) UpdateMotto(ctx *gin.Context) {
+func (b *BlogController) UpdateMotto(ctx *gin.Context) {
 	var motto model.Motto
 	err := ctx.ShouldBind(&motto)
 	if err != nil {

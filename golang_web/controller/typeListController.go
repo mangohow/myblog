@@ -1,4 +1,4 @@
-package router
+package controller
 
 import (
 	"blog_web/db/service"
@@ -14,20 +14,20 @@ import (
 * @Desc:
  */
 
-type TypeListRouter struct {
+type TypeListController struct {
 	blogService *service.BlogService
 	typeService *service.TypeService
 }
 
-func NewTypeListRouter() *TypeListRouter {
-	return &TypeListRouter{
+func NewTypeListRouter() *TypeListController {
+	return &TypeListController{
 		blogService: service.NewBlogService(),
 		typeService: service.NewTypeService(),
 	}
 }
 
 // 博客类型页面获取所有博客类型
-func (t *TypeListRouter) GetTypeList(ctx *gin.Context) {
+func (t *TypeListController) GetTypeList(ctx *gin.Context) {
 	allTypes := t.typeService.FindAll()
 	typeIds := t.blogService.GetAllTypes()
 	m := make(map[int]*model.TheType)
@@ -43,7 +43,7 @@ func (t *TypeListRouter) GetTypeList(ctx *gin.Context) {
 }
 
 // 博客类型页面根据博客类型ID获取博客
-func (t *TypeListRouter) GetBlogListByTypeid(ctx *gin.Context) {
+func (t *TypeListController) GetBlogListByTypeid(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "8")
 	typeId := utils.QueryInt(ctx, "typeId")

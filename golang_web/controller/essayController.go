@@ -1,4 +1,4 @@
-package router
+package controller
 
 import (
 	"blog_web/db/service"
@@ -7,17 +7,17 @@ import (
 	"net/http"
 )
 
-type EssayRouter struct {
+type EssayController struct {
 	essayService *service.EssayService
 }
 
-func NewEssayRouter() *EssayRouter {
-	return &EssayRouter{
+func NewEssayRouter() *EssayController {
+	return &EssayController{
 		essayService: service.NewEssayService(),
 	}
 }
 
-func (e *EssayRouter) EssayList(ctx *gin.Context) {
+func (e *EssayController) EssayList(ctx *gin.Context) {
 	essays := e.essayService.GetAll()
 	if essays == nil {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))

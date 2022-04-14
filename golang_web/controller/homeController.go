@@ -1,4 +1,4 @@
-package router
+package controller
 
 import (
 	"blog_web/db/service"
@@ -14,7 +14,7 @@ import (
 * @Desc: 博客主页对应的Routers
  */
 
-type HomeRouter struct {
+type HomeController struct {
 	blogService    *service.BlogService
 	commentService *service.CommentService
 	bgImageService *service.BGImageService
@@ -22,8 +22,8 @@ type HomeRouter struct {
 	userService *service.UserService
 }
 
-func NewHomeRouter() *HomeRouter {
-	return &HomeRouter{
+func NewHomeRouter() *HomeController {
+	return &HomeController{
 		blogService:    service.NewBlogService(),
 		commentService: service.NewCommentService(),
 		bgImageService: service.NewBGImageService(),
@@ -33,7 +33,7 @@ func NewHomeRouter() *HomeRouter {
 }
 
 // 主页博客展示
-func (h *HomeRouter) HomeListBlogs(ctx *gin.Context) {
+func (h *HomeController) HomeListBlogs(ctx *gin.Context) {
 	pageNum := utils.QueryInt(ctx, "pageNum")
 	pageSize := utils.QueryInt(ctx, "pageSize")
 	utils.Logger().Debug("pageNum:%v, pageSize:%v", pageNum, pageSize)
@@ -49,7 +49,7 @@ func (h *HomeRouter) HomeListBlogs(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (h *HomeRouter) GetHomePageUInfo(ctx *gin.Context) {
+func (h *HomeController) GetHomePageUInfo(ctx *gin.Context) {
 	user, tagn := h.userService.GetInfo()
 	if user == nil {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
@@ -62,7 +62,7 @@ func (h *HomeRouter) GetHomePageUInfo(ctx *gin.Context) {
 }
 
 // 浏览博客详情
-func (h *HomeRouter) GetDetailedBlog(ctx *gin.Context) {
+func (h *HomeController) GetDetailedBlog(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	blog, tags := h.blogService.GetDetailedBlog(id)
 	if blog == nil {
@@ -76,7 +76,7 @@ func (h *HomeRouter) GetDetailedBlog(ctx *gin.Context) {
 }
 
 // 发布一条评论
-func (h *HomeRouter) PublishComment(ctx *gin.Context) {
+func (h *HomeController) PublishComment(ctx *gin.Context) {
 	var comment model.Comment
 	err := ctx.ShouldBind(&comment)
 	if err != nil {
@@ -94,21 +94,21 @@ func (h *HomeRouter) PublishComment(ctx *gin.Context) {
 }
 
 // 获取评论列表
-func (h *HomeRouter) GetCommentList(ctx *gin.Context) {
+func (h *HomeController) GetCommentList(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	comments := h.commentService.GetCommentList(id)
 	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, comments))
 }
 
 // 搜索博客
-func (h *HomeRouter) SearchBlog(ctx *gin.Context) {
+func (h *HomeController) SearchBlog(ctx *gin.Context) {
 	keyWord := ctx.Query("keyWord")
 	blogs := h.blogService.GetBlogsByKeyWord(keyWord)
 	result := utils.ResponseResult(utils.QUERY_SUCCESS, blogs)
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (h *HomeRouter) GetBgImages(ctx *gin.Context) {
+func (h *HomeController) GetBgImages(ctx *gin.Context) {
 	urls := h.bgImageService.GetAllUrl()
 	if urls == nil {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
@@ -117,7 +117,7 @@ func (h *HomeRouter) GetBgImages(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, urls))
 }
 
-func (h *HomeRouter) GetMottos(ctx *gin.Context) {
+func (h *HomeController) GetMottos(ctx *gin.Context) {
 	mottos := h.mottoService.GetAllMotto()
 	if mottos == nil {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
@@ -127,7 +127,7 @@ func (h *HomeRouter) GetMottos(ctx *gin.Context) {
 }
 
 //获取最新推荐博客
-func (h *HomeRouter) GetNewBlogs(ctx *gin.Context) {
+func (h *HomeController) GetNewBlogs(ctx *gin.Context) {
 	limit := utils.DefaultQueryInt(ctx, "countLimit", "10")
 	blogs := h.blogService.GetNewBlogs(limit)
 	if blogs == nil {
@@ -139,7 +139,7 @@ func (h *HomeRouter) GetNewBlogs(ctx *gin.Context) {
 }
 
 // 获取热门博客
-func (h *HomeRouter) GetHotBlogs(ctx *gin.Context) {
+func (h *HomeController) GetHotBlogs(ctx *gin.Context) {
 	limit := utils.DefaultQueryInt(ctx, "countLimit", "10")
 	blogs := h.blogService.GetHotBlogs(limit)
 	if blogs == nil {

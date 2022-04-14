@@ -8,17 +8,17 @@ import (
 	"net/http"
 )
 
-type MessageRouter struct {
+type MessageController struct {
 	msgService *service.LeaveMessageService
 }
 
-func NewMessageRouter() *MessageRouter {
-	return &MessageRouter{
+func NewMessageRouter() *MessageController {
+	return &MessageController{
 		msgService: service.NewLeaveMessageService(),
 	}
 }
 
-func (m *MessageRouter) MessageList(ctx *gin.Context) {
+func (m *MessageController) MessageList(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
 	messages, count := m.msgService.GetPageMessage(pageNum, pageSize)
@@ -27,7 +27,7 @@ func (m *MessageRouter) MessageList(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (m *MessageRouter) UpdateStatus(ctx *gin.Context) {
+func (m *MessageController) UpdateStatus(ctx *gin.Context) {
 	var msg model.Message
 	err := ctx.ShouldBind(&msg)
 	if err != nil {

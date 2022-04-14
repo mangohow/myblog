@@ -14,17 +14,17 @@ import (
 * @Desc:
  */
 
-type TypeRouter struct {
+type TypeController struct {
 	typeService *service.TypeService
 }
 
-func NewTypeRouter() *TypeRouter {
-	return &TypeRouter{
+func NewTypeRouter() *TypeController {
+	return &TypeController{
 		typeService: service.NewTypeService(),
 	}
 }
 
-func (t *TypeRouter) GetAllTypes(ctx *gin.Context) {
+func (t *TypeController) GetAllTypes(ctx *gin.Context) {
 	types := t.typeService.FindAll()
 	if types == nil {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
@@ -33,7 +33,7 @@ func (t *TypeRouter) GetAllTypes(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, types))
 }
 
-func (t *TypeRouter) GetOnePageTypes(ctx *gin.Context) {
+func (t *TypeController) GetOnePageTypes(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "5")
 	types, count := t.typeService.GetOnePage(pageNum, pageSize)
@@ -42,13 +42,13 @@ func (t *TypeRouter) GetOnePageTypes(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (t *TypeRouter) CheckTypeExist(ctx *gin.Context) {
+func (t *TypeController) CheckTypeExist(ctx *gin.Context) {
 	typename := ctx.Query("typename")
 	exist := t.typeService.CheckTypeExist(typename)
 	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, exist))
 }
 
-func (t *TypeRouter) DeleteType(ctx *gin.Context) {
+func (t *TypeController) DeleteType(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	ok := t.typeService.DeleteById(id)
 	if !ok {
@@ -58,7 +58,7 @@ func (t *TypeRouter) DeleteType(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
 }
 
-func (t *TypeRouter) UpdateType(ctx *gin.Context) {
+func (t *TypeController) UpdateType(ctx *gin.Context) {
 	var tp model.TheType
 	err := ctx.ShouldBind(&tp)
 	if err != nil {
@@ -74,7 +74,7 @@ func (t *TypeRouter) UpdateType(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
 }
 
-func (t *TypeRouter) AddType(ctx *gin.Context) {
+func (t *TypeController) AddType(ctx *gin.Context) {
 	var tp model.TheType
 	ctx.ShouldBind(&tp)
 	ok := t.typeService.AddType(tp.Name)

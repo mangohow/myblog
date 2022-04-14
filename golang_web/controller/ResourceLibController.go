@@ -1,4 +1,4 @@
-package router
+package controller
 
 import (
 	"blog_web/db/service"
@@ -7,17 +7,17 @@ import (
 	"net/http"
 )
 
-type ResourceLibRouter struct {
+type ResourceLibController struct {
 	linkService *service.LinkService
 }
 
-func NewResourceLibRouter() *ResourceLibRouter {
-	return &ResourceLibRouter{
+func NewResourceLibRouter() *ResourceLibController {
+	return &ResourceLibController{
 		linkService: service.NewLinkService(),
 	}
 }
 
-func (r *ResourceLibRouter) LinkList(ctx *gin.Context) {
+func (r *ResourceLibController) LinkList(ctx *gin.Context) {
 	links := r.linkService.GetAllLinks()
 	categories := r.linkService.GetAllCategory()
 	if links == nil || categories == nil {

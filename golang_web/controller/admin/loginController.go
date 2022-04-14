@@ -15,18 +15,18 @@ import (
 * @Desc:
  */
 
-type LoginRouter struct {
+type LoginController struct {
 	userService *service.UserService
 }
 
-func NewLoginRouter() *LoginRouter {
-	return &LoginRouter{
+func NewLoginRouter() *LoginController {
+	return &LoginController{
 		userService: service.NewUserService(),
 	}
 }
 
 // 博客后台登录的router
-func (l *LoginRouter) Login(ctx *gin.Context) {
+func (l *LoginController) Login(ctx *gin.Context) {
 	var u model.User
 	err := ctx.ShouldBind(&u)
 	if err != nil {
