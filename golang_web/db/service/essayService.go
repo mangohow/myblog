@@ -3,7 +3,6 @@ package service
 import (
 	"blog_web/db/dao"
 	"blog_web/model"
-	"blog_web/utils"
 )
 
 type EssayService struct {
@@ -16,34 +15,17 @@ func NewEssayService() *EssayService {
 	}
 }
 
-func (e *EssayService) GetAll() []model.Essay {
-	essays, err := e.essayDao.FindAll()
-	if err != nil {
-		utils.Logger().Warning("Get essays error:%v", err)
-		return nil
-	}
-	return essays
+func (e *EssayService) GetAll() ([]model.Essay, error) {
+	return e.essayDao.FindAll()
 }
 
-func (e *EssayService) GetLimited(pageNum, pageSize int) []model.Essay {
+func (e *EssayService) GetLimited(pageNum, pageSize int) ([]model.Essay, error) {
 	pageStart := (pageNum - 1) * pageSize
-	essays, err := e.essayDao.FindLimited(pageStart, pageSize)
-	if err != nil {
-		utils.Logger().Warning("get essays error:%v", err)
-		return nil
-	}
-
-	return essays
+	return e.essayDao.FindLimited(pageStart, pageSize)
 }
 
-func (e *EssayService) GetCount() int {
-	count, err := e.essayDao.FindTotalCount()
-	if err != nil {
-		utils.Logger().Warning("get essay count error:%v", err)
-		return 0
-	}
-
-	return count
+func (e *EssayService) GetCount() (int, error) {
+	return e.essayDao.FindTotalCount()
 }
 
 func (e *EssayService) AddEssay(essay *model.Essay) error {

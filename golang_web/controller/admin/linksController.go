@@ -22,13 +22,18 @@ func (l *LinksController) LinksList(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
 
-	links := l.linkService.GetLimitedLinks(pageNum, pageSize)
-	categories := l.linkService.GetAllCategory()
-	if links == nil || categories == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	links, err := l.linkService.GetLimitedLinks(pageNum, pageSize)
+	if checkError(err, "Get links error") {
+		queryFailed(ctx)
 		return
 	}
-	count := l.linkService.GetLinkCount()
+	categories, err := l.linkService.GetAllCategory()
+	if checkError(err, "Get categories error") {
+		queryFailed(ctx)
+		return
+	}
+
+	count, _ := l.linkService.GetLinkCount()
 	result := utils.ResponseResult(utils.QUERY_SUCCESS, links)
 	result["categories"] = categories
 	result["count"] = count
@@ -38,98 +43,99 @@ func (l *LinksController) LinksList(ctx *gin.Context) {
 func (l *LinksController) DeleteLink(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	err := l.linkService.DeleteLink(id)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
+	if checkError(err, "Delete link error") {
+		deleteFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
+	deleteSuccess(ctx)
 }
 
 func (l *LinksController) UpdateLink(ctx *gin.Context) {
 	var link model.Link
 	err := ctx.ShouldBind(&link)
-	if err != nil {
-		utils.Logger().Warning("bind param error:%v", err)
+	if checkError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
 
 	err = l.linkService.UpdateLink(&link)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Update link error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }
 
 func (l *LinksController) AddLink(ctx *gin.Context) {
 	var link model.Link
 	err := ctx.ShouldBind(&link)
-	if err != nil {
-		utils.Logger().Warning("bind param error:%v", err)
+	if checkError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
 
 	err = l.linkService.AddLink(&link)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Add link error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }
 
 func (l *LinksController) Categories(ctx *gin.Context) {
-	categories := l.linkService.GetAllCategory()
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, categories))
+	categories, err := l.linkService.GetAllCategory()
+	if checkError(err, "Get categories error") {
+		queryFailed(ctx)
+		return
+	}
+
+	querySuccess(ctx, categories)
 }
 
 func (l *LinksController) DeleteCategory(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	err := l.linkService.DeleteCategory(id)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
+	if checkError(err, "Delete category error") {
+		deleteFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
+	deleteSuccess(ctx)
 }
 
 func (l *LinksController) UpdateCategory(ctx *gin.Context) {
 	var category model.LinkCategory
 	err := ctx.ShouldBind(&category)
-	if err != nil {
-		utils.Logger().Warning("bind param error:%v", err)
+	if checkError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
 
 	err = l.linkService.UpdateCategory(&category)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Update category error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }
 
 func (l *LinksController) AddCategory(ctx *gin.Context) {
 	var category model.LinkCategory
 	err := ctx.ShouldBind(&category)
-	if err != nil {
-		utils.Logger().Warning("bind param error:%v", err)
+	if checkError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
 
 	err = l.linkService.AddCategory(&category)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Add category error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }

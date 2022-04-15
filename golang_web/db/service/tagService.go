@@ -3,7 +3,6 @@ package service
 import (
 	"blog_web/db/dao"
 	"blog_web/model"
-	"blog_web/utils"
 )
 
 /*
@@ -23,24 +22,18 @@ func NewTagService() *TagService {
 }
 
 // 获取所有标签
-func (t *TagService) GetAllTags() []model.Tag {
-	tags, err := t.tagDao.FindAllTags()
-	if err != nil {
-		return nil
-	}
-
-	return tags
+func (t *TagService) GetAllTags() ([]model.Tag, error) {
+	return t.tagDao.FindAllTags()
 }
 
-func (t *TagService) GetOnePageTags(pageNum, pageSize int) ([]model.Tag, int) {
+func (t *TagService) GetOnePageTags(pageNum, pageSize int) ([]model.Tag, int, error) {
 	pageStart := (pageNum - 1) * pageSize
 	tags, err := t.tagDao.GetOnePageTags(pageStart, pageSize)
 	if err != nil {
-		utils.Logger().Warning("GetOnePageTags error:%v", err)
-		return nil, 0
+		return nil, 0, err
 	}
 	count, _ := t.tagDao.GetTagsCount()
-	return tags, count
+	return tags, count, nil
 }
 
 func (t *TagService) CheckTagExist(name string) bool {
@@ -52,32 +45,14 @@ func (t *TagService) CheckTagExist(name string) bool {
 	return true
 }
 
-func (t *TagService) DeleteTagById(id int) bool {
-	err := t.tagDao.DeleteById(id)
-	if err != nil {
-		utils.Logger().Warning("DeleteTagById error:%v", err)
-		return false
-	}
-
-	return true
+func (t *TagService) DeleteTagById(id int) error {
+	return t.tagDao.DeleteById(id)
 }
 
-func (t *TagService) UpdateTagName(id int, name string) bool {
-	err := t.tagDao.UpdateName(id, name)
-	if err != nil {
-		utils.Logger().Warning("UpdateTagName error:%v", err)
-		return false
-	}
-
-	return true
+func (t *TagService) UpdateTagName(id int, name string) error {
+	return t.tagDao.UpdateName(id, name)
 }
 
-func (t *TagService) AddTag(name string) bool {
-	err := t.tagDao.AddTag(name)
-	if err != nil {
-		utils.Logger().Warning("AddTag error:%v", err)
-		return false
-	}
-
-	return true
+func (t *TagService) AddTag(name string) error {
+	return t.tagDao.AddTag(name)
 }

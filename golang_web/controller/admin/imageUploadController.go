@@ -41,8 +41,7 @@ func NewImageUploadRouter() *ImageUploadController {
 // 上传博客首图
 func (ir *ImageUploadController) UploadImage(ctx *gin.Context) {
 	_, netpath, err := uploadImage(ctx, ir.baseImagePath, ir.firstPicPath)
-	if err != nil {
-		utils.Logger().Warning("%v", err)
+	if checkError(err, "Upload image error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
@@ -53,8 +52,7 @@ func (ir *ImageUploadController) UploadImage(ctx *gin.Context) {
 // 上传博客中的图片
 func (ir *ImageUploadController) UploadBlogImage(ctx *gin.Context) {
 	_, netpath, err := uploadImage(ctx, ir.baseImagePath, ir.blogImgPath)
-	if err != nil {
-		utils.Logger().Warning("%v", err)
+	if checkError(err, "Upload blog image error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
@@ -65,8 +63,7 @@ func (ir *ImageUploadController) UploadBlogImage(ctx *gin.Context) {
 // 上传图标
 func (ir *ImageUploadController) UploadIcon(ctx *gin.Context) {
 	_, netpath, err := uploadImage(ctx, ir.baseImagePath, ir.icon)
-	if err != nil {
-		utils.Logger().Warning("%v", err)
+	if checkError(err, "Upload icon error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}

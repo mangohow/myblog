@@ -22,8 +22,12 @@ func NewEssayRouter() *EssayController {
 func (e *EssayController) EssayList(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
-	essays := e.essayService.GetLimited(pageNum, pageSize)
-	count := e.essayService.GetCount()
+	essays, err := e.essayService.GetLimited(pageNum, pageSize)
+	if checkError(err, "Get essays error") {
+		queryFailed(ctx)
+		return
+	}
+	count, _ := e.essayService.GetCount()
 	result := utils.ResponseResult(utils.QUERY_SUCCESS, essays)
 	result["count"] = count
 	ctx.JSON(http.StatusOK, result)
@@ -32,52 +36,49 @@ func (e *EssayController) EssayList(ctx *gin.Context) {
 func (e *EssayController) AddEssay(ctx *gin.Context) {
 	var essay model.Essay
 	err := ctx.ShouldBind(&essay)
-	if err != nil {
+	if checkError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
 
 	essay.CreateTime = time.Now()
 	err = e.essayService.AddEssay(&essay)
-	if err != nil {
-		utils.Logger().Warning("add essay error:%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Add essay error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }
 
 func (e *EssayController) DeleteEssay(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	if (id <= 0) {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
+		deleteFailed(ctx)
 		return
 	}
 	err := e.essayService.DeleteEssay(id)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
+	if checkError(err, "Delete essay error") {
+		deleteFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
+	deleteSuccess(ctx)
 }
 
 func (e *EssayController) UpdateEssay(ctx *gin.Context) {
 	var essay model.Essay
 	err := ctx.ShouldBind(&essay)
-	if err != nil {
-		utils.Logger().Warning("bind essay error:%v", err)
+	if checkError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
 
 	err = e.essayService.UpdateEssay(&essay)
-	if err != nil {
-		utils.Logger().Warning("update essay error:%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Update essay error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }

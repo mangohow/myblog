@@ -62,7 +62,7 @@ export default {
             if (res.status !== 101) {
                 status === 1 ? this.$message.error("评论通过失败，请重试！") : this.$message.error("评论禁止失败，请重试！")
             } else {
-                status === 1 ? this.$message.success("评论通过成功！") : this.$message.error("评论禁止成功！")
+                status === 1 ? this.$message.success("评论通过成功！") : this.$message.success("评论禁止成功！")
                 await this.getMessageList()
             }
         },

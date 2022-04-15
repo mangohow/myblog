@@ -34,7 +34,11 @@ func (b *BlogController) SearchBlogs(ctx *gin.Context) {
 	typeId := utils.QueryInt(ctx, "typeId")
 	recommended := ctx.Query("recommended")
 
-	blogs, count := b.blogService.GetBlogsByTitleOrTypeOrRecommend(pageNum, pageSize, blogTitle, typeId, recommended)
+	blogs, count, err := b.blogService.GetBlogsByTitleOrTypeOrRecommend(pageNum, pageSize, blogTitle, typeId, recommended)
+	if checkError(err, "Search blogs error") {
+		queryFailed(ctx)
+		return
+	}
 	result := utils.ResponseResult(utils.QUERY_SUCCESS, blogs)
 	result["count"] = count
 	ctx.JSON(http.StatusOK, result)
@@ -42,19 +46,23 @@ func (b *BlogController) SearchBlogs(ctx *gin.Context) {
 
 func (b *BlogController) DeleteBlog(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
-	ok := b.blogService.DeleteBlog(id)
-	if !ok {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
+	err := b.blogService.DeleteBlog(id)
+	if checkError(err, "Delete blog error") {
+		deleteFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
+	deleteSuccess(ctx)
 }
 
 func (b *BlogController) GetFullBlog(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
+	blogs, tags, err := b.blogService.GetFullBlog(id)
+	if checkError(err, "Get Full blog error") {
+		queryFailed(ctx)
+		return
+	}
 
-	blogs, tags := b.blogService.GetFullBlog(id)
 	result := utils.ResponseResult(utils.QUERY_SUCCESS, blogs)
 	result["tags"] = tags
 	ctx.JSON(http.StatusOK, result)
@@ -63,8 +71,7 @@ func (b *BlogController) GetFullBlog(ctx *gin.Context) {
 func (b *BlogController) AddBlog(ctx *gin.Context) {
 	var blog model.FullBlog
 	err := ctx.ShouldBind(&blog)
-	if err != nil {
-		utils.Logger().Warning("%v", err)
+	if checkError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
@@ -76,82 +83,80 @@ func (b *BlogController) AddBlog(ctx *gin.Context) {
 	}
 	blog.UpdateTime = tm
 
-	var ok bool
 	if blog.Id == 0 { // 新增博客
-		ok = b.blogService.AddBlog(&blog)
+		err = b.blogService.AddBlog(&blog)
+		if checkError(err, "Add blog error") {
+			operateFailed(ctx)
+			return
+		}
 	} else { // 更新博客
-		ok = b.blogService.UpdateBlog(&blog)
-	}
-	if !ok {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
-		return
+		err = b.blogService.UpdateBlog(&blog)
+		if checkError(err, "Update blog error") {
+			operateFailed(ctx)
+			return
+		}
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }
 
 func (b *BlogController) MottoList(ctx *gin.Context) {
-	mottos := b.mottoService.GetAllMottoWithCreateTime()
-	if mottos == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	mottos, err := b.mottoService.GetAllMottoWithCreateTime()
+	if checkError(err, "Get mottos error") {
+		queryFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, mottos))
+	querySuccess(ctx, mottos)
 }
 
 func (b *BlogController) AddMotto(ctx *gin.Context) {
 	var motto model.Motto
 	err := ctx.ShouldBind(&motto)
-	if err != nil {
-		utils.Logger().Warning("bind param error:%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Bind param error") {
+		operateFailed(ctx)
 		return
 	}
 
 	motto.CreateTime = time.Now()
 	err = b.mottoService.AddOne(&motto)
-	if err != nil {
-		utils.Logger().Warning("add motto error:%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Add motto error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }
 
 func (b *BlogController) DeleteMotto(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
 	if id == 0 {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
+		deleteFailed(ctx)
 		return
 	}
 
 	err := b.mottoService.DeleteOne(uint32(id))
-	if err != nil {
-		utils.Logger().Warning("delete motto error:%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
+	if checkError(err, "Delete motto error") {
+		deleteFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
+	deleteSuccess(ctx)
 }
 
 func (b *BlogController) UpdateMotto(ctx *gin.Context) {
 	var motto model.Motto
 	err := ctx.ShouldBind(&motto)
-	if err != nil {
-		utils.Logger().Warning("bind param error:%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Bind param error") {
+		operateFailed(ctx)
 		return
 	}
 
 	err = b.mottoService.UpdateOne(&motto)
-	if err != nil {
-		utils.Logger().Warning("update motto error:%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Update motto error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }

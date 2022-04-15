@@ -2,9 +2,7 @@ package controller
 
 import (
 	"blog_web/db/service"
-	"blog_web/utils"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type EssayController struct {
@@ -18,10 +16,11 @@ func NewEssayRouter() *EssayController {
 }
 
 func (e *EssayController) EssayList(ctx *gin.Context) {
-	essays := e.essayService.GetAll()
-	if essays == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	essays, err := e.essayService.GetAll()
+	if checkError(err, "Get Essay List") {
+		queryFailed(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, essays))
+
+	querySuccess(ctx, essays)
 }

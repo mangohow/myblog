@@ -23,23 +23,21 @@ func NewLeaveMessageRouter() *LeaveMessageController {
 func (l *LeaveMessageController) LeaveMessage(ctx *gin.Context) {
 	var msg model.Message
 	err := ctx.ShouldBind(&msg)
-	if err != nil {
-		utils.Logger().Debug("%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Bind param error") {
+		operateFailed(ctx)
 		return
 	}
 
 	// 在使用nginx作为反向代理时，需要在nginx中进行配置，添加客户端的真实IP到头部，以便web服务器获取
 	msg.Ip = ctx.GetHeader("X-Forwarded-For")
-	utils.Logger().Debug("%v,%v", msg.Ip, ctx.GetHeader("Host"))
 
 	msg.Avatar = utils.RandomInt(28)
 	msg.CreateTime = time.Now()
 	err = l.messageService.AddMessage(&msg)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Add message error, msg:%s", msg.Ip) {
+		operateFailed(ctx)
 	} else {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+		operateSuccess(ctx)
 	}
 }
 
@@ -47,9 +45,9 @@ func (l *LeaveMessageController) DisplayMessage(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
 
-	messages, count, totalCount := l.messageService.GetDisplayMessage(pageNum, pageSize)
-	if messages == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	messages, count, totalCount, err := l.messageService.GetDisplayMessage(pageNum, pageSize)
+	if checkError(err, "Get messages error") {
+		queryFailed(ctx)
 		return
 	}
 

@@ -25,18 +25,24 @@ func NewTypeRouter() *TypeController {
 }
 
 func (t *TypeController) GetAllTypes(ctx *gin.Context) {
-	types := t.typeService.FindAll()
-	if types == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	types, err := t.typeService.FindAll()
+	if checkError(err, "Find types error") {
+		queryFailed(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, types))
+
+	querySuccess(ctx, types)
 }
 
 func (t *TypeController) GetOnePageTypes(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "5")
-	types, count := t.typeService.GetOnePage(pageNum, pageSize)
+	types, count, err := t.typeService.GetOnePage(pageNum, pageSize)
+	if checkError(err, "Get one page types error") {
+		queryFailed(ctx)
+		return
+	}
+
 	result := utils.ResponseResult(utils.QUERY_SUCCESS, types)
 	result["total"] = count
 	ctx.JSON(http.StatusOK, result)
@@ -45,42 +51,45 @@ func (t *TypeController) GetOnePageTypes(ctx *gin.Context) {
 func (t *TypeController) CheckTypeExist(ctx *gin.Context) {
 	typename := ctx.Query("typename")
 	exist := t.typeService.CheckTypeExist(typename)
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, exist))
+	querySuccess(ctx, exist)
 }
 
 func (t *TypeController) DeleteType(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
-	ok := t.typeService.DeleteById(id)
-	if !ok {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
+	err := t.typeService.DeleteById(id)
+	if checkError(err, "Delete type error") {
+		deleteFailed(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
+
+	deleteSuccess(ctx)
 }
 
 func (t *TypeController) UpdateType(ctx *gin.Context) {
 	var tp model.TheType
 	err := ctx.ShouldBind(&tp)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Bind param error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ok := t.typeService.UpdateName(tp.Id, tp.Name)
-	if !ok {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	err = t.typeService.UpdateName(tp.Id, tp.Name)
+	if checkError(err, "Update type error") {
+		operateFailed(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+
+	operateSuccess(ctx)
 }
 
 func (t *TypeController) AddType(ctx *gin.Context) {
 	var tp model.TheType
 	ctx.ShouldBind(&tp)
-	ok := t.typeService.AddType(tp.Name)
-	if !ok {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	err := t.typeService.AddType(tp.Name)
+	if checkError(err, "Add type error") {
+		operateFailed(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+
+	operateSuccess(ctx)
 }

@@ -23,9 +23,8 @@ func NewCommentService() *CommentService {
 }
 
 // 根据博客ID获取所有对应的评论
-func (c *CommentService) GetCommentList(id int) []model.Comment {
-	comments, _ := c.commentDao.FindByBlogId(id)
-	return comments
+func (c *CommentService) GetCommentList(id int) ([]model.Comment, error) {
+	return c.commentDao.FindByBlogId(id)
 }
 
 // 发布一条评论

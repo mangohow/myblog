@@ -2,9 +2,7 @@ package controller
 
 import (
 	"blog_web/db/service"
-	"blog_web/utils"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 /*
@@ -25,16 +23,21 @@ func NewTimeLineRouter() *TimeLineController {
 
 // 时间线页面获取博客
 func (t *TimeLineController) GetTimeLinedBlogs(ctx *gin.Context) {
-	blogs := t.blogService.GetTimeLineBlogs()
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, blogs))
-}
-
-func (t *TimeLineController) GetGroupedBlogs(ctx *gin.Context) {
-	types := t.blogService.GetTypeAndBlogCount()
-	if types == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	blogs, err := t.blogService.GetTimeLineBlogs()
+	if checkError(err, "Get timeline blogs error") {
+		queryFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, types))
+	querySuccess(ctx, blogs)
+}
+
+func (t *TimeLineController) GetGroupedBlogs(ctx *gin.Context) {
+	types, err := t.blogService.GetTypeAndBlogCount()
+	if checkError(err, "Get grouped blogs error") {
+		queryFailed(ctx)
+		return
+	}
+
+	querySuccess(ctx, types)
 }

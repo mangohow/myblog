@@ -21,13 +21,8 @@ func NewMottoService() *MottoService {
 	}
 }
 
-func (m *MottoService) GetAllMotto() []model.Motto {
-	mottos, err := m.mottoDao.FindAll()
-	if err != nil {
-		return nil
-	}
-
-	return mottos
+func (m *MottoService) GetAllMotto() ([]model.Motto, error) {
+	return m.mottoDao.FindAll()
 }
 
 func (m *MottoService) AddOne(motto *model.Motto) error {
@@ -42,13 +37,8 @@ func (m *MottoService) UpdateOne(motto *model.Motto) error {
 	return m.mottoDao.UpdateById(motto)
 }
 
-func (m *MottoService) GetAllMottoWithCreateTime() []model.Motto {
-	mottos, err := m.mottoDao.FindAllWithCreateTime()
-	if err != nil {
-		return nil
-	}
-
-	return mottos
+func (m *MottoService) GetAllMottoWithCreateTime() ([]model.Motto, error) {
+	return m.mottoDao.FindAllWithCreateTime()
 }
 
 

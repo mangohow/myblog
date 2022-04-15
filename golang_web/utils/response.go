@@ -1,6 +1,8 @@
 package utils
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 /*
 * @Author: mgh
@@ -35,6 +37,7 @@ var Descs = map[uint32]string{
 	DELETE_FAILED:   "删除失败",
 	DELETE_SUCCESS:  "删除成功",
 }
+
 
 func ResponseResult(code uint32, data interface{}) gin.H {
 	return gin.H{

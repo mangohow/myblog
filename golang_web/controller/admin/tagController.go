@@ -25,14 +25,24 @@ func NewTagRouter() *TagController {
 }
 
 func (t *TagController) GetAllTags(ctx *gin.Context) {
-	tags := t.tagService.GetAllTags()
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, tags))
+	tags, err := t.tagService.GetAllTags()
+	if checkError(err, "Get tags error") {
+		queryFailed(ctx)
+		return
+	}
+
+	querySuccess(ctx, tags)
 }
 
 func (t *TagController) GetOnePageTags(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "5")
-	tags, count := t.tagService.GetOnePageTags(pageNum, pageSize)
+	tags, count, err := t.tagService.GetOnePageTags(pageNum, pageSize)
+	if checkError(err, "Get one page tag error") {
+		queryFailed(ctx)
+		return
+	}
+
 	result := utils.ResponseResult(utils.QUERY_SUCCESS, tags)
 	result["total"] = count
 	ctx.JSON(http.StatusOK, result)
@@ -41,48 +51,48 @@ func (t *TagController) GetOnePageTags(ctx *gin.Context) {
 func (t *TagController) CheckTagExist(ctx *gin.Context) {
 	name := ctx.Query("name")
 	exist := t.tagService.CheckTagExist(name)
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, exist))
+	querySuccess(ctx, exist)
 }
 
 func (t *TagController) DeleteTag(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
-	ok := t.tagService.DeleteTagById(id)
-	if !ok {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_FAILED))
+	err := t.tagService.DeleteTagById(id)
+	if checkError(err, "Delete tag error") {
+		deleteFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.DELETE_SUCCESS))
+	deleteSuccess(ctx)
 }
 
 func (t *TagController) UpdateTag(ctx *gin.Context) {
 	var tag model.Tag
 	if err := ctx.ShouldBind(&tag); err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+		operateFailed(ctx)
 		return
 	}
 
-	ok := t.tagService.UpdateTagName(tag.Id, tag.Name)
-	if !ok {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	err := t.tagService.UpdateTagName(tag.Id, tag.Name)
+	if checkError(err, "Update tag error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }
 
 func (t *TagController) AddTag(ctx *gin.Context) {
 	var tag model.Tag
 	if err := ctx.ShouldBind(&tag); err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+		operateFailed(ctx)
 		return
 	}
 
-	ok := t.tagService.AddTag(tag.Name)
-	if !ok {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	err := t.tagService.AddTag(tag.Name)
+	if checkError(err, "Add tag error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }

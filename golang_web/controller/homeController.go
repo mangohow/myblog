@@ -42,17 +42,24 @@ func (h *HomeController) HomeListBlogs(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
 		return
 	}
-	blogs := h.blogService.GetHomePageBlogs(pageNum, pageSize)
-	count := h.blogService.GetBolgCount()
+	blogs, err := h.blogService.GetHomePageBlogs(pageNum, pageSize)
+	if checkError(err, "Get Blogs error") {
+		queryFailed(ctx)
+	}
+	count, err := h.blogService.GetBolgCount()
+	if checkError(err, "Get Blogs error") {
+		queryFailed(ctx)
+	}
+
 	result := utils.ResponseResult(utils.QUERY_SUCCESS, blogs)
 	result["count"] = count
 	ctx.JSON(http.StatusOK, result)
 }
 
 func (h *HomeController) GetHomePageUInfo(ctx *gin.Context) {
-	user, tagn := h.userService.GetInfo()
-	if user == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	user, tagn, err := h.userService.GetInfo()
+	if checkError(err, "Get Userinfo error") {
+		queryFailed(ctx)
 		return
 	}
 
@@ -64,9 +71,9 @@ func (h *HomeController) GetHomePageUInfo(ctx *gin.Context) {
 // 浏览博客详情
 func (h *HomeController) GetDetailedBlog(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
-	blog, tags := h.blogService.GetDetailedBlog(id)
-	if blog == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	blog, tags, err := h.blogService.GetDetailedBlog(id)
+	if checkError(err, "Get Detailed blog error") {
+		queryFailed(ctx)
 		return
 	}
 
@@ -79,73 +86,84 @@ func (h *HomeController) GetDetailedBlog(ctx *gin.Context) {
 func (h *HomeController) PublishComment(ctx *gin.Context) {
 	var comment model.Comment
 	err := ctx.ShouldBind(&comment)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
-		return
-	}
-	err = h.commentService.Publish(&comment)
-	if err != nil {
-		utils.Logger().Warning("%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Bind param error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	err = h.commentService.Publish(&comment)
+	if checkError(err, "Publish comment error") {
+		operateFailed(ctx)
+		return
+	}
+
+	operateSuccess(ctx)
 }
 
 // 获取评论列表
 func (h *HomeController) GetCommentList(ctx *gin.Context) {
 	id := utils.QueryInt(ctx, "id")
-	comments := h.commentService.GetCommentList(id)
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, comments))
+	comments, err := h.commentService.GetCommentList(id)
+	if checkError(err, "Get Comment List error") {
+		queryFailed(ctx)
+		return
+	}
+
+	querySuccess(ctx, comments)
 }
 
 // 搜索博客
 func (h *HomeController) SearchBlog(ctx *gin.Context) {
 	keyWord := ctx.Query("keyWord")
-	blogs := h.blogService.GetBlogsByKeyWord(keyWord)
-	result := utils.ResponseResult(utils.QUERY_SUCCESS, blogs)
-	ctx.JSON(http.StatusOK, result)
+	blogs, err := h.blogService.GetBlogsByKeyWord(keyWord)
+	if checkError(err, "Search Blogs error") {
+		queryFailed(ctx)
+		return
+	}
+
+	querySuccess(ctx, blogs)
 }
 
 func (h *HomeController) GetBgImages(ctx *gin.Context) {
-	urls := h.bgImageService.GetAllUrl()
-	if urls == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	urls, err := h.bgImageService.GetAllUrl()
+	if checkError(err, "Get Background Images error") {
+		queryFailed(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, urls))
+
+	querySuccess(ctx, urls)
 }
 
 func (h *HomeController) GetMottos(ctx *gin.Context) {
-	mottos := h.mottoService.GetAllMotto()
-	if mottos == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	mottos, err := h.mottoService.GetAllMotto()
+	if checkError(err, "Get Mottos error") {
+		queryFailed(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, mottos))
+
+	querySuccess(ctx, mottos)
 }
 
 //获取最新推荐博客
 func (h *HomeController) GetNewBlogs(ctx *gin.Context) {
 	limit := utils.DefaultQueryInt(ctx, "countLimit", "10")
-	blogs := h.blogService.GetNewBlogs(limit)
-	if blogs == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	blogs, err := h.blogService.GetNewBlogs(limit)
+	if checkError(err, "Get New Blogs error") {
+		queryFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, blogs))
+	querySuccess(ctx, blogs)
 }
 
 // 获取热门博客
 func (h *HomeController) GetHotBlogs(ctx *gin.Context) {
 	limit := utils.DefaultQueryInt(ctx, "countLimit", "10")
-	blogs := h.blogService.GetHotBlogs(limit)
-	if blogs == nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.QUERY_FAILED))
+	blogs, err := h.blogService.GetHotBlogs(limit)
+	if checkError(err, "Get Hot Blogs error") {
+		queryFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseResult(utils.QUERY_SUCCESS, blogs))
+	querySuccess(ctx, blogs)
 }

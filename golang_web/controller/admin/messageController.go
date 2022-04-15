@@ -21,7 +21,12 @@ func NewMessageRouter() *MessageController {
 func (m *MessageController) MessageList(ctx *gin.Context) {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
-	messages, count := m.msgService.GetPageMessage(pageNum, pageSize)
+	messages, count, err := m.msgService.GetPageMessage(pageNum, pageSize)
+	if checkError(err, "Get messages error") {
+		queryFailed(ctx)
+		return
+	}
+
 	result := utils.ResponseResult(utils.QUERY_SUCCESS, messages)
 	result["count"] = count
 	ctx.JSON(http.StatusOK, result)
@@ -30,18 +35,17 @@ func (m *MessageController) MessageList(ctx *gin.Context) {
 func (m *MessageController) UpdateStatus(ctx *gin.Context) {
 	var msg model.Message
 	err := ctx.ShouldBind(&msg)
-	if err != nil {
+	if checkError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
 
 	err = m.msgService.UpdateMsgStatus(&msg)
-	if err != nil {
-		utils.Logger().Warning("update message status error:%v", err)
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_FAILED))
+	if checkError(err, "Update message status error") {
+		operateFailed(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.OPERATE_SUCCESS))
+	operateSuccess(ctx)
 }
 

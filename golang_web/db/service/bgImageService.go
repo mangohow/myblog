@@ -18,12 +18,8 @@ func NewBGImageService() *BGImageService {
 	}
 }
 
-func (bg *BGImageService) GetAllUrl() []string {
-	urls, err := bg.bgImageDao.FindAllURL()
-	if err != nil {
-		return nil
-	}
-	return urls
+func (bg *BGImageService) GetAllUrl() ([]string, error) {
+	return bg.bgImageDao.FindAllURL()
 }
 
 func (bg *BGImageService) AddUrl(url string) error {

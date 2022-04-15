@@ -29,7 +29,7 @@ func NewLoginRouter() *LoginController {
 func (l *LoginController) Login(ctx *gin.Context) {
 	var u model.User
 	err := ctx.ShouldBind(&u)
-	if err != nil {
+	if checkError(err, "Bind param error") {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.LOGIN_FAILED))
 		return
 	}
@@ -39,16 +39,18 @@ func (l *LoginController) Login(ctx *gin.Context) {
 		return
 	}
 
-	user := l.userService.CheckUser(u.Username, u.Password)
-	if user == nil {
+	user, err := l.userService.CheckUser(u.Username, u.Password)
+	if checkError(err, "Username or Password incorrect, IP:%s", ctx.GetHeader("X-Forwarded-For")) {
 		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.LOGIN_FAILED))
 		return
 	}
+
 	token, err := utils.CreateToken(uint32(user.Id), user.Username, time.Hour * 24)
-	if err != nil {
-		ctx.JSON(http.StatusOK, utils.ResponseWithoutData(utils.LOGIN_FAILED))
+	if checkError(err, "Generate token error") {
+		ctx.Status(http.StatusInternalServerError)
 		return
 	}
+
 	result := utils.ResponseWithoutData(utils.LOGIN_SUCCESS)
 	result["token"] = token
 	result["id"] = user.Id

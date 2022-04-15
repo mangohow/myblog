@@ -3,7 +3,6 @@ package service
 import (
 	"blog_web/db/dao"
 	"blog_web/model"
-	"blog_web/utils"
 )
 
 /*
@@ -25,164 +24,133 @@ func NewBlogService() *BlogService {
 }
 
 // 获取主页的博客列表，根据pageNum和pageSize进行分页
-func (b *BlogService) GetHomePageBlogs(pageNum, pageSize int) []model.BlogUserType {
+func (b *BlogService) GetHomePageBlogs(pageNum, pageSize int) ([]model.BlogUserType, error) {
 	pageStart := (pageNum - 1) * pageSize
-	blogs, err := b.blogDao.GetConciseBlogs(pageStart, pageSize)
-	if err != nil {
-		utils.Logger().Warning("GetHomePageBlogs error:%v", err)
-		return nil
-	}
-
-	return blogs
+	return b.blogDao.GetConciseBlogs(pageStart, pageSize)
 }
 
 // 获取所有博客的数量
-func (b *BlogService) GetBolgCount() int {
-	count, err := b.blogDao.GetBolgCount()
-	if err != nil {
-		return 0
-	}
-
-	return count
+func (b *BlogService) GetBolgCount() (int, error) {
+	return b.blogDao.GetBolgCount()
 }
 
 // 获取博客详情，也就是浏览博客
-func (b *BlogService) GetDetailedBlog(id int) (*model.DetailedBlog, []model.Tag) {
+func (b *BlogService) GetDetailedBlog(id int) (*model.DetailedBlog, []model.Tag, error) {
 	b.blogDao.UpdateViews(id)
 	blog, err := b.blogDao.FindDetailedBlog(id)
 	if err != nil {
-		utils.Logger().Warning("FindDetailedBlog error:%v", err)
-		return nil, nil
+		return nil, nil, err
 	}
 	tags, _ := b.tagDao.GetTagsByBlogId(id)
 
-	return blog, tags
+	return blog, tags, nil
 }
 
 // 获取所有的博客类型
-func (b *BlogService) GetAllTypes() []int {
-	typeIds, err := b.blogDao.FindAllTypes()
-	if err != nil {
-		return nil
-	}
-	return typeIds
+func (b *BlogService) GetAllTypes() ([]int, error) {
+	return b.blogDao.FindAllTypes()
 }
 
 // 根据博客类型ID获取博客列表
-func (b *BlogService) GetBlogListByTypeId(typeid, pageNum, pageSize int) ([]model.BlogUserType, int) {
+func (b *BlogService) GetBlogListByTypeId(typeid, pageNum, pageSize int) ([]model.BlogUserType, int, error) {
 	pageStart := (pageNum - 1) * pageSize
 	blogs, err := b.blogDao.FindByTypeId(typeid, pageStart, pageSize)
 	if err != nil {
-		utils.Logger().Warning("GetBlogListByTypeId error:%v", err)
-		return nil, 0
+		return nil, 0, err
 	}
 
 	count, err := b.blogDao.GetBolgCountByTypeId(typeid)
 	if err != nil {
-		return nil, 0
+		return nil, 0, err
 	}
 
-	return blogs, count
+	return blogs, count, nil
 }
 
 // 根据标签ID获取博客列表
-func (b *BlogService) GetBlogsByTagId(id, pageNum, pageSize int) ([]model.BlogUserType, int) {
+func (b *BlogService) GetBlogsByTagId(id, pageNum, pageSize int) ([]model.BlogUserType, int, error) {
 	pageStart := (pageNum - 1) * pageSize
 	blogs, err := b.blogDao.FindBlogsByTagId(id, pageStart, pageSize)
 	if err != nil {
-		utils.Logger().Warning("GetBlogsByTagId error:%v", err)
-		return nil, 0
+		return nil, 0, err
 	}
 
 	count, err := b.blogDao.GetBlogCountByTagId(id)
 	if err != nil {
-		utils.Logger().Warning("GetBlogsByTagId error:%v", err)
-		return nil, 0
+		return nil, 0, err
 	}
 
-	return blogs, count
+	return blogs, count, nil
 }
 
 // 获取时间线页面的博客列表
-func (b *BlogService) GetTimeLineBlogs() [][]model.Blog {
+func (b *BlogService) GetTimeLineBlogs() ([][]model.Blog, error) {
 	years, err := b.blogDao.GetAllBlogPublishYear()
 	if err != nil {
-		utils.Logger().Warning("GetTimeLineBlogs error:%v", err)
-		return nil
+		return nil, err
 	}
 
 	groupBlogs := make([][]model.Blog, 0, 1)
 	for _, year := range years {
 		blogs, err := b.blogDao.GetBlogByFormatedYear(year)
 		if err != nil {
-			utils.Logger().Warning("GetTimeLineBlogs error:%v", err)
-			return nil
+			return nil, err
 		}
 		groupBlogs = append(groupBlogs, blogs)
 	}
 
-	return groupBlogs
+	return groupBlogs, nil
 }
 
 // 根据关键词查询博客列表
-func (b *BlogService) GetBlogsByKeyWord(keyWord string) []model.BlogSection {
+func (b *BlogService) GetBlogsByKeyWord(keyWord string) ([]model.BlogSection, error) {
 	keyWord = "%" + keyWord + "%"
 	blogs, err := b.blogDao.FindBlogsByKeyWord(keyWord)
 	if err != nil {
-		utils.Logger().Warning("GetBlogsByKeyWord error:%v", err)
-		return nil
+		return nil, err
 	}
 
-	return blogs
+	return blogs, nil
 }
 
 // 根据title、type、recommend来筛选博客
-func (b *BlogService) GetBlogsByTitleOrTypeOrRecommend(pageNum, pageSize int, title string, typeId int, recommend string) ([]model.BlogUserType, int) {
+func (b *BlogService) GetBlogsByTitleOrTypeOrRecommend(pageNum, pageSize int, title string, typeId int,
+										recommend string) ([]model.BlogUserType, int, error) {
 	pageStart := (pageNum - 1) * pageSize
 	blogs, count, err := b.blogDao.FindBlogsByTitleOrTypeOrRecommend(pageStart, pageSize, title, typeId, recommend)
 	if err != nil {
-		utils.Logger().Warning("GetBlogsByTitleOrTypeOrRecommend error:%v", err)
-		return nil, 0
+		return nil, 0, err
 	}
 
-	return blogs, count
+	return blogs, count, nil
 }
 
-func (b *BlogService) DeleteBlog(id int) bool {
-	err := b.blogDao.DeleteById(id)
-	if err != nil {
-		utils.Logger().Warning("delete blog error:%v", err)
-		return false
-	}
-
-	return true
+func (b *BlogService) DeleteBlog(id int) error {
+	return b.blogDao.DeleteById(id)
 }
 
-func (b *BlogService) GetFullBlog(id int) (*model.BlogUserType, []model.Tag) {
+func (b *BlogService) GetFullBlog(id int) (*model.BlogUserType, []model.Tag, error) {
 	blog, err := b.blogDao.FindFullBlog(id)
 	if err != nil {
-		utils.Logger().Warning("GetFullBlog error:%v", err)
-		return nil, nil
+		return nil, nil, err
 	}
 
 	tags, err := b.tagDao.GetTagsByBlogId(id)
 	if err != nil {
-		utils.Logger().Warning("GetFullBlog error:%v", err)
-		return nil, nil
+		return nil, nil, err
 	}
 
-	return blog, tags
+	return blog, tags, nil
 }
 
-func (b *BlogService) UpdateBlog(blog *model.FullBlog) bool {
+func (b *BlogService) UpdateBlog(blog *model.FullBlog) error {
 	tx, err := dao.Sqldb.Beginx()
 	if err != nil {
-		return false
+		return err
 	}
 
 	defer func() {
 		if e := recover(); e != nil {
-			utils.Logger().Warning("UpdateBlog panic")
 			tx.Rollback()
 		}
 	}()
@@ -190,17 +158,15 @@ func (b *BlogService) UpdateBlog(blog *model.FullBlog) bool {
 	//  从t_blog_tags表中删除原来的数据
 	err = b.blogDao.DeleteBlogTagsByBlogId(tx, blog.Id)
 	if err != nil {
-		utils.Logger().Warning("DeleteBlogTagsByBlogId error:%v", err)
 		tx.Rollback()
-		return false
+		return err
 	}
 
 	// 更新t_blog表
 	err = b.blogDao.UpdateBlog(tx, blog)
 	if err != nil {
-		utils.Logger().Warning("UpdateBlog error:%v", err)
 		tx.Rollback()
-		return false
+		return err
 	}
 
 	// 更新t_blog_tags表
@@ -211,25 +177,23 @@ func (b *BlogService) UpdateBlog(blog *model.FullBlog) bool {
 	}
 	err = b.blogDao.InsertIntoBlogTags(tx, blogTags)
 	if err != nil {
-		utils.Logger().Warning("InsertIntoBlogTags error:%v", err)
 		tx.Rollback()
-		return false
+		return err
 	}
 
 	tx.Commit()
-	return true
 
+	return nil
 }
 
-func (b *BlogService) AddBlog(blog *model.FullBlog) bool {
+func (b *BlogService) AddBlog(blog *model.FullBlog) error {
 	tx, err := dao.Sqldb.Beginx()
 	if err != nil {
-		return false
+		return err
 	}
 
 	defer func() {
 		if e := recover(); e != nil {
-			utils.Logger().Error("UpdateBlog panic")
 			tx.Rollback()
 		}
 	}()
@@ -237,9 +201,8 @@ func (b *BlogService) AddBlog(blog *model.FullBlog) bool {
 	// 更新t_blog表
 	id, err := b.blogDao.AddBlog(tx, blog)
 	if err != nil {
-		utils.Logger().Error("AddBlog error:%v", err)
 		tx.Rollback()
-		return false
+		return err
 	}
 	// 更新t_blog_tags表
 	blogTags := make([]model.BlogTag, len(blog.TagIds))
@@ -249,45 +212,27 @@ func (b *BlogService) AddBlog(blog *model.FullBlog) bool {
 	}
 	err = b.blogDao.InsertIntoBlogTags(tx, blogTags)
 	if err != nil {
-		utils.Logger().Warning("InsertIntoBlogTags error:%v", err)
 		tx.Rollback()
-		return false
+		return err
 	}
 
 	tx.Commit()
-	return true
+
+	return nil
 }
 
 // 根据创建时间获取最新的n篇博客
-func (b *BlogService) GetNewBlogs(n int) []model.BlogSection {
-	blogs, err := b.blogDao.FindBlogsByCreateTime(n)
-	if err != nil {
-		utils.Logger().Warning("%v", err)
-		return nil
-	}
-
-	return blogs
+func (b *BlogService) GetNewBlogs(n int) ([]model.BlogSection, error) {
+	return b.blogDao.FindBlogsByCreateTime(n)
 }
 
 
 // 根据浏览次数获取最热门的n篇博客
-func (b *BlogService) GetHotBlogs(n int) []model.BlogSection {
-	blogs, err := b.blogDao.FindBlogsByViews(n)
-	if err != nil {
-		utils.Logger().Warning("%v", err)
-		return nil
-	}
-
-	return blogs
+func (b *BlogService) GetHotBlogs(n int) ([]model.BlogSection, error) {
+	return b.blogDao.FindBlogsByViews(n)
 }
 
 // 获取每个类型以及该类型下的博客数量
-func (b *BlogService) GetTypeAndBlogCount() []model.TheType {
-	types, err := b.blogDao.FindTypeAndBlogCount()
-	if err != nil {
-		utils.Logger().Warning("%v", err)
-		return nil
-	}
-
-	return types
+func (b *BlogService) GetTypeAndBlogCount() ([]model.TheType, error) {
+	return b.blogDao.FindTypeAndBlogCount()
 }

@@ -3,7 +3,6 @@ package service
 import (
 	"blog_web/db/dao"
 	"blog_web/model"
-	"blog_web/utils"
 )
 
 type LinkService struct {
@@ -16,38 +15,21 @@ func NewLinkService() *LinkService {
 	}
 }
 
-func (l *LinkService) GetAllLinks() []model.Link {
-	if links, err := l.linkDao.FindAllLinks(); err == nil {
-		return links
-	}
-	return nil
+func (l *LinkService) GetAllLinks() ([]model.Link, error) {
+	return l.linkDao.FindAllLinks()
 }
 
-func (l *LinkService) GetAllCategory() []model.LinkCategory {
-	if categories, err := l.linkDao.FindAllLinkCategory(); err == nil {
-		return categories
-	}
-	return nil
+func (l *LinkService) GetAllCategory() ([]model.LinkCategory, error) {
+	return l.linkDao.FindAllLinkCategory()
 }
 
-func (l *LinkService) GetLimitedLinks(pageNum, pageSize int) []model.Link {
+func (l *LinkService) GetLimitedLinks(pageNum, pageSize int) ([]model.Link, error) {
 	pageStart := (pageNum - 1) * pageSize
-	links, err := l.linkDao.FindLimitedLinks(pageStart, pageSize)
-	if err != nil {
-		utils.Logger().Warning("get links error:%v", err)
-		return nil
-	}
-
-	return links
+	return l.linkDao.FindLimitedLinks(pageStart, pageSize)
 }
 
-func (l *LinkService) GetLinkCount() int {
-	count, err := l.linkDao.FindLinkCount()
-	if err != nil {
-		utils.Logger().Warning("get link count error:%v", err)
-	}
-
-	return count
+func (l *LinkService) GetLinkCount() (int, error) {
+	return l.linkDao.FindLinkCount()
 }
 
 func (l *LinkService) AddLink(link *model.Link) error {

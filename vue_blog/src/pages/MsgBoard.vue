@@ -226,6 +226,7 @@ export default {
 
 .comments {
     width: 1070px;
+    min-height: 80px;
     border-radius: 8px;
     background-color: #fff;
     box-shadow: 0 15px 35px rgb(50 50 93 / 18%), 0 5px 15px rgb(0 0 0 / 18%) !important;

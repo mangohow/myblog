@@ -3,7 +3,6 @@ package service
 import (
 	"blog_web/db/dao"
 	"blog_web/model"
-	"blog_web/utils"
 )
 
 /*
@@ -24,24 +23,16 @@ func NewUserService() *UserService {
 	}
 }
 
-func (u *UserService) CheckUser(username, password string) *model.User {
-	user, err := u.userDao.FindUserByUsernameAndPassword(username, password)
-	if err != nil {
-		utils.Logger().Warning("%v", err)
-		return nil
-	}
-
-	return user
+func (u *UserService) CheckUser(username, password string) (*model.User, error) {
+	return u.userDao.FindUserByUsernameAndPassword(username, password)
 }
 
-func (u *UserService) GetInfo() (*model.User, int) {
+func (u *UserService) GetInfo() (*model.User, int, error) {
 	info, err := u.userDao.FindInfo()
 	if err != nil {
-		utils.Logger().Warning("%v", err)
-		return nil, 0
+		return nil, 0, err
 	}
 	count, _ := u.tagDao.GetTagsCount()
 
-
-	return info, count
+	return info, count, nil
 }
