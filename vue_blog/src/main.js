@@ -27,8 +27,8 @@ Vue.component('bubbles-effect', bubbles);
 Vue.use(mavonEditor)
 
 
-axios.defaults.baseURL="http://localhost:8082/api"
-// axios.defaults.baseURL="http://192.168.44.100/api"
+// axios.defaults.baseURL="http://localhost:8082/api"
+axios.defaults.baseURL="http://192.168.44.100/api"
 
 
 //配置请求拦截器，用于在访问后端服务器时携带token令牌
@@ -51,7 +51,7 @@ axios.interceptors.response.use(config => {
   }
 
   if(config.data.status == 300) {    // 返回码为300时，说明需要登录，才能访问后台
-    router.push("/manage/login");
+    router.push("/login");
   }
 
   return config;

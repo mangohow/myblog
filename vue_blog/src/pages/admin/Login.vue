@@ -82,7 +82,7 @@ export default {
                     //2 通过编程式导航跳转到后台主页.路由地址为home
                 window.sessionStorage.setItem("token", res.token);
                 window.sessionStorage.setItem("userId", res.id);
-                await this.$router.push("/manage/home")
+                await this.$router.push("/manageHome")
             });
         }
     }

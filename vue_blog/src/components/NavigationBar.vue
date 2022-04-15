@@ -41,7 +41,7 @@
                     <li v-if="false"><NaviItem :activeRoute="activeRoute" index-name="照片墙" ico-class="icon-zhaopianxuanzhong" rout="/photoWall"></NaviItem></li>
                     <li><NaviItem :activeRoute="activeRoute" index-name="资源库" ico-class="icon-ziyuanku" rout="/resourceLib"></NaviItem></li>
                     <li><NaviItem :activeRoute="activeRoute" index-name="关于我" ico-class="icon-guanyuwomen" rout="/about"></NaviItem></li>
-                    <li><NaviItem target="_blank" :activeRoute="activeRoute" index-name="后台管理" ico-class="icon-houtaiguanli-jifenguanli" rout="/manage/login"></NaviItem></li>
+                    <li><NaviItem :activeRoute="activeRoute" index-name="后台管理" ico-class="icon-houtaiguanli-jifenguanli" rout="/login"></NaviItem></li>
                 </ul>
             </div>
         </div>

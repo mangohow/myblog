@@ -30,44 +30,48 @@ import ManageEssay from "../pages/admin/essay/ManageEssay";
 
 Vue.use(VueRouter)
 
-
 const routes = [
-  { path: "/", redirect: "/index" },
   {
-    path: "/index",
+    path: "/",
     component: Index,
+    meta: {
+        auth: false
+    },
     redirect: "/home",
     children: [
-      { path: "/home", component: Home },
-      { path: "/blogDetail", component: BlogDetail },
-      { path: "/types", component: Types },
-      { path: "/tags", component: Tags },
-      { path: "/timeLine", component: TimeLine },
-      { path: "/essay", component: Essay },
-      { path: "/msgBoard", component: MsgBoard },
-      { path: "/photoWall", component: PhotoWall },
-      { path: "/resourceLib", component: ResourceLib },
-      { path: "/about", component: About },
-      { path: "/notFound", component: NotFound},
-      { path: "/internalError", component: InternalError}
+      { path: "/home", component: Home, meta: {auth: false} },
+      { path: "/blogDetail", component: BlogDetail, meta: {auth: false} },
+      { path: "/types", component: Types, meta: {auth: false} },
+      { path: "/tags", component: Tags, meta: {auth: false} },
+      { path: "/timeLine", component: TimeLine, meta: {auth: false} },
+      { path: "/essay", component: Essay, meta: {auth: false} },
+      { path: "/msgBoard", component: MsgBoard, meta: {auth: false} },
+      { path: "/photoWall", component: PhotoWall, meta: {auth: false} },
+      { path: "/resourceLib", component: ResourceLib, meta: {auth: false} },
+      { path: "/about", component: About, meta: {auth: false} },
+      { path: "/notFound", component: NotFound, meta: {auth: false} },
+      { path: "/internalError", component: InternalError, meta: {auth: false} }
     ]
   },
-  { path: "/manage/login", component: Login },
+  { path: "/login", component: Login },
   {
-    path: "/manage/home",
+    path: "/manageHome",
     component: AdminHome,
+    meta: {
+        auth: false
+    },
     redirect: "/welcome",
     children: [
-      { path: "/welcome", component: Welcome},
-      { path: "/listBlogs", component: ListBlogs},
-      { path: "/addBlog", component: AddBlog},
-      { path: "/listMottos", component: ListMottos},
-      { path: "/listTypes", component: ListTypes},
-      { path: "/listTags", component: ListTags},
-      { path: "/listImages", component: ListImages},
-      { path: "/manageMsg", component: ManageMessage},
-      { path: "/manageLink", component: ManageResLink},
-      { path: "/manageEssay", component: ManageEssay}
+      { path: "/welcome", component: Welcome, meta: {auth: true} },
+      { path: "/listBlogs", component: ListBlogs, meta: {auth: true} },
+      { path: "/addBlog", component: AddBlog, meta: {auth: true} },
+      { path: "/listMottos", component: ListMottos, meta: {auth: true} },
+      { path: "/listTypes", component: ListTypes, meta: {auth: true} },
+      { path: "/listTags", component: ListTags, meta: {auth: true} },
+      { path: "/listImages", component: ListImages, meta: {auth: true} },
+      { path: "/manageMsg", component: ManageMessage, meta: {auth: true} },
+      { path: "/manageLink", component: ManageResLink, meta: {auth: true} },
+      { path: "/manageEssay", component: ManageEssay, meta: {auth: true} }
     ]
   }
 ]
@@ -84,21 +88,14 @@ router.beforeEach((to, from, next) => {
   // form: 从哪个路径跳转而来
   // next 是一个函数，表示放行
   // next() 放行 next("/login") 强制跳转
-  // 如果访问的不是管理员页面，直接放行
-  let requestUrl = to.path
-  let start = requestUrl.indexOf("/manage")
-  if (start != 0) {
-    return next();
-  }
-
-  // 如果访问的是登录页，也放行
-  if(to.path == "/manage/login") {
-    return next();
+  // 如果访问的不是管理员或登录页面，直接放行
+  if (!to.meta.auth) {
+      return next()
   }
 
   // 访问的是管理员页面，查看有没有token，如果有，则放行，否则，跳转到登录页
   const tokenStr = window.sessionStorage.getItem("token");
-  if(!tokenStr) return next("/manage/login");
+  if(!tokenStr) return next("/login");
   next();
 })
 

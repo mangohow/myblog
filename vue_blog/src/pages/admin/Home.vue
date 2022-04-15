@@ -131,7 +131,7 @@ export default {
             // 清空token
             window.sessionStorage.clear();
             // 跳转登录页
-            this.$router.push("/manage/login");
+            this.$router.push("/login");
         },
         toggleCollapse() {   //单机按钮实现菜单的折叠与展开
             this.isCollapse = !this.isCollapse;

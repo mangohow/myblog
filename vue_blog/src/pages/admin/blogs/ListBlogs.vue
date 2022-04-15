@@ -137,7 +137,7 @@ export default {
         },
         handleEdit: function(id) {
             this.$router.push({
-                path: "addBlog",
+                path: "/addBlog",
                 query: {
                     id: id
                 }
