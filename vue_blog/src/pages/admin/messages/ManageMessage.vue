@@ -51,10 +51,10 @@ export default {
     methods: {
         async getMessageList() {
             const {data:res} = await this.$axios.get("/admin/msgList", {params: this.queryInfo});
-            if(res.data) {
+            if(res.data.length > 1) {
                 this.messages.splice(0, this.messages.length)
-                this.messages.push(...res.data)
-                this.total = res.count
+                this.messages.push(...res.data[0])
+                this.total = res.data[1]
             }
         },
         async handleStatus(id, status) {

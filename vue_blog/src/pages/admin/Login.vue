@@ -74,14 +74,19 @@ export default {
                     return this.$message.error(res.message);
                 }
 
+                if (res.data.length <= 0) {
+                    return this.$message.error(res.message);
+                }
+                const token = res.data[0]
+                const id = res.data[1]
                 this.$message.success(res.message);
                 // 登录成功之后:
                     //1 将登陆成功的Token保存到客户端的sessionStorage中，token只应在当前网站
                     //    打开期间生效，所以将Token保存到客户端的sessionStorage中
                     // sessionStorage 是会话期间的存储 localStorage是持久化的存储
                     //2 通过编程式导航跳转到后台主页.路由地址为home
-                window.sessionStorage.setItem("token", res.token);
-                window.sessionStorage.setItem("userId", res.id);
+                window.sessionStorage.setItem("token", token);
+                window.sessionStorage.setItem("userId", id);
                 await this.$router.push("/manageHome")
             });
         }

@@ -13,6 +13,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,11 +27,11 @@ func main() {
 	//gin.SetMode(gin.ReleaseMode)
 
 	engine.Use(gin.LoggerWithWriter(utils.Logger().Out), gin.Recovery())
-	engine.Static("/images", utils.GlobalServerConf.Server.ImagePath + "/images")
+	engine.Static("/images", viper.GetString("server.imagePath") + "/images")
 
 	router.Register(engine)
 
-	addr := fmt.Sprintf("%s:%d", utils.GlobalServerConf.Server.Host, utils.GlobalServerConf.Server.Port)
+	addr := fmt.Sprintf("%s:%d", viper.GetString("server.host"), viper.GetInt("server.port"))
 	defer dao.CloseMysqlConn()
 
 	srv := http.Server{
@@ -41,7 +42,12 @@ func main() {
 	go func() {
 		err := srv.ListenAndServe()
 		if err != nil {
-			panic(err)
+			if err == http.ErrServerClosed {
+				fmt.Println("Server closed!")
+				return
+			} else {
+				panic(err)
+			}
 		}
 	}()
 

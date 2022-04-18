@@ -2,9 +2,8 @@ package controller
 
 import (
 	"blog_web/db/service"
-	"blog_web/utils"
+	"blog_web/response"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type ResourceLibController struct {
@@ -17,19 +16,15 @@ func NewResourceLibRouter() *ResourceLibController {
 	}
 }
 
-func (r *ResourceLibController) LinkList(ctx *gin.Context) {
+func (r *ResourceLibController) LinkList(ctx *gin.Context) *response.Response {
 	links, err := r.linkService.GetAllLinks()
-	if checkError(err, "Get links error") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "Get links error") {
+		return response.ResponseQueryFailed()
 	}
 	categories, err := r.linkService.GetAllCategory()
-	if checkError(err, "Get categories error") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "Get categories error") {
+		return response.ResponseQueryFailed()
 	}
 
-	result := utils.ResponseResult(utils.QUERY_SUCCESS, links)
-	result["categories"] = categories
-	ctx.JSON(http.StatusOK, result)
+	return response.ResponseQuerySuccess(links, categories)
 }

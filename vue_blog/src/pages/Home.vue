@@ -94,7 +94,7 @@ export default {
             showCat: false,
             showMotto: true,
             pages: 1,              // 页面数量
-            blogCount: 0,
+            blogCount: 66,
             queryInfo: {
               pageNum: 1,
               pageSize: 8
@@ -185,18 +185,23 @@ export default {
         async getBackgImage() {
             const {data: res} = await this.$axios.get("/myblog/bgs")
             if(res.status === 1) { //查询成功
-                this.firstBGPageInfo.bgs = res.data
-                const n = Math.round(Math.random() * (res.data.length - 1));
-                this.firstBGPageInfo.curBg = res.data[n]
+                if (res.data.length > 0) {
+                    this.firstBGPageInfo.bgs = res.data[0]
+                    const n = Math.round(Math.random() * (res.data[0].length - 1));
+                    this.firstBGPageInfo.curBg = this.firstBGPageInfo.bgs[n]
+                }
+
             }
         },
         // 获取座右铭
         async getMotto() {
             const {data: res} = await this.$axios.get("/myblog/mottos")
             if(res.status === 1) {
-                this.firstBGPageInfo.mottos = res.data
-                const n = Math.round(Math.random() * (res.data.length - 1));
-                this.firstBGPageInfo.curMotto = res.data[n]
+                if (res.data.length > 0) {
+                    this.firstBGPageInfo.mottos = res.data[0]
+                    const n = Math.round(Math.random() * (res.data[0].length - 1));
+                    this.firstBGPageInfo.curMotto = this.firstBGPageInfo.mottos[n]
+                }
             }
         },
         anchorDown() {
@@ -210,9 +215,9 @@ export default {
                 window.sessionStorage.removeItem("keyWord");
                 const {data:res} = await this.$axios.get("/myblog/search", {params: {pageNum: this.queryInfo.pageNum, pageSize: this.queryInfo.pageSize, keyWord: keyWord}});
                 if(res.status === 1) {
-                    this.blogDetails = res.data;
-                    this.blogCount = res.count
-                    this.pages = Math.ceil(res.count / this.queryInfo.pageSize)
+                    this.blogDetails = res.data.length > 0 ? res.data[0] : this.blogDetails
+                    this.blogCount = res.data.length > 1 ? res.data[1] : this.blogCount
+                    this.pages = Math.ceil(this.blogCount / this.queryInfo.pageSize)
                     if (this.pages <= 0) {
                         this.pages = 1
                     }
@@ -222,9 +227,9 @@ export default {
             } else {
                 const {data:res} = await this.$axios.get("/myblog/blogLists", {params: this.queryInfo});
                 if(res.status === 1) {
-                    this.blogDetails = res.data;
-                    this.blogCount = res.count
-                    this.pages = Math.ceil(res.count / this.queryInfo.pageSize)
+                    this.blogDetails = res.data.length > 0 ? res.data[0] : this.blogDetails
+                    this.blogCount = res.data.length > 1 ? res.data[1] : this.blogCount
+                    this.pages = Math.ceil(this.blogCount / this.queryInfo.pageSize)
                     if (this.pages <= 0) {
                         this.pages = 1
                     }
@@ -237,7 +242,7 @@ export default {
         async getNewBlogs() {
             const {data:res} = await this.$axios.get("/myblog/newBlogs", {params: {countLimit: 10}});
             if(res.status === 1) {
-                this.newRecommend.list = res.data;
+                this.newRecommend.list = res.data.length > 0 ? res.data[0] : this.newRecommend.list;
             } else {
                 this.$message.warning("获取最新推荐失败！")
             }
@@ -246,7 +251,7 @@ export default {
         async getHotBlogs() {
             const {data:res} = await this.$axios.get("/myblog/hotBlogs", {params: {countLimit: 10}});
             if(res.status === 1) {
-                this.hotBlogs.list = res.data;
+                this.hotBlogs.list = res.data.length > 0 ? res.data[0] : this.hotBlogs.list;
             } else {
                 this.$message.warning("获取热门推荐失败！")
             }

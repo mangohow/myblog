@@ -111,7 +111,7 @@ export default {
             if(change === true) {    //下拉框出现时为true 隐藏时为false
                 const{data: res} = await this.$axios.get("/admin/getAllTypes");
                 if(res.status === 1) {
-                    this.types = res.data;
+                    this.types = res.data.length > 0 ? res.data[0] : [];
                 } else {
                     this.$message.error(res.message);
                 }
@@ -122,13 +122,16 @@ export default {
             var item = this.types.find(item => {
                 return item.name === name
             })
-            this.postInfo.typeId = item.id;
+            if (item) {
+                this.postInfo.typeId = item.id;
+            }
+
         },
         getAllTags: async function(change) {
             if(change == true) {    //下拉框出现时为true 隐藏时为false
                 const{data: res} = await this.$axios.get("/admin/getAllTags");
                 if(res.status == 1) {
-                    this.tags = res.data;
+                    this.tags = res.data.length > 0 ? res.data[0] : [];
                 } else {
                     this.$message.error(res.message);
                 }
@@ -147,14 +150,24 @@ export default {
             if(!res.status) {
                 this.$message.error("出现了一点小问题，请重试");
                 await this.$router.push("/listBlogs");
+                return
             }
-            const blog = res.data;
 
-            this.postInfo = { ...this.postInfo, ...res.data}
-            this.postInfo.tagIds = res.tags.map(x => {return x.id});
+            let blogs, tags
+            if (res.data.length > 1) {
+                blogs = res.data[0]
+                tags = res.data[1]
+            } else {
+                this.$message.error("出现了一点小问题，请重试");
+                await this.$router.push("/listBlogs");
+                return
+            }
+
+            this.postInfo = { ...this.postInfo, ...blogs}
+            this.postInfo.tagIds = tags.map(x => {return x.id});
             this.markdownText = this.postInfo.content;
-            this.selectedType = blog.typename;
-            this.selectedTag = res.tags.map(x => {return x.name});
+            this.selectedType = blogs.typename;
+            this.selectedTag = tags.map(x => {return x.name});
         },
         setPostInfo: function() {
             const userId = window.sessionStorage.getItem("userId");

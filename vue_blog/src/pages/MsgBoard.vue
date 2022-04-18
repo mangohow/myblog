@@ -83,26 +83,29 @@ export default {
             }
 
             this.messages.splice(0, this.messages.length)
-            this.total = res.totalCount
-            this.pages = Math.ceil(res.count / this.queryInfo.pageSize)
+            this.total = res.data.length > 2 ? res.data[2] : this.total
+            const count = res.data.length > 1 ? res.data[1] : 0
+            const data = res.data.length > 0 ? res.data[0] : []
+
+            this.pages = Math.ceil(count / this.queryInfo.pageSize)
             if (this.pages <= 0) {
                 this.pages = 1
             }
 
             // 查找第一个子评论的index，之前的都是父评论
-            const index = res.data.findIndex(val => val.parentId !== 0)
+            const index = data.findIndex(val => val.parentId !== 0)
             // 如果index为-1，说明没有子评论
             if (index === -1) {
-                res.data.forEach((val) => {
+                data.forEach((val) => {
                     this.messages.push({
                         myself: val,
                         children: []
                     })
                 })
             } else {  // 有子评论，过滤子评论
-                const parentMsg = res.data.splice(0, index)
+                const parentMsg = data.splice(0, index)
                 parentMsg.forEach((val) => {
-                    const children = res.data.filter(v => val.id === v.topParentId)
+                    const children = data.filter(v => val.id === v.topParentId)
                     // 查找子评论的子评论，给其添加父评论昵称
                     children.forEach((item) => {
                         if (item.parentId !== item.topParentId) {

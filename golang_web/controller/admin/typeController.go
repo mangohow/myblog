@@ -3,9 +3,9 @@ package admin
 import (
 	"blog_web/db/service"
 	"blog_web/model"
+	"blog_web/response"
 	"blog_web/utils"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 /*
@@ -24,72 +24,64 @@ func NewTypeRouter() *TypeController {
 	}
 }
 
-func (t *TypeController) GetAllTypes(ctx *gin.Context) {
+func (t *TypeController) GetAllTypes(ctx *gin.Context) *response.Response {
 	types, err := t.typeService.FindAll()
-	if checkError(err, "Find types error") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "Find types error") {
+		return response.ResponseQueryFailed()
 	}
 
-	querySuccess(ctx, types)
+	return response.ResponseQuerySuccess(types)
 }
 
-func (t *TypeController) GetOnePageTypes(ctx *gin.Context) {
+func (t *TypeController) GetOnePageTypes(ctx *gin.Context) *response.Response {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "5")
 	types, count, err := t.typeService.GetOnePage(pageNum, pageSize)
-	if checkError(err, "Get one page types error") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "Get one page types error") {
+		return response.ResponseQueryFailed()
 	}
 
-	result := utils.ResponseResult(utils.QUERY_SUCCESS, types)
-	result["total"] = count
-	ctx.JSON(http.StatusOK, result)
+	return response.ResponseQuerySuccess(types, count)
 }
 
-func (t *TypeController) CheckTypeExist(ctx *gin.Context) {
+func (t *TypeController) CheckTypeExist(ctx *gin.Context) *response.Response {
 	typename := ctx.Query("typename")
 	exist := t.typeService.CheckTypeExist(typename)
-	querySuccess(ctx, exist)
+	return response.ResponseQuerySuccess(exist)
 }
 
-func (t *TypeController) DeleteType(ctx *gin.Context) {
+func (t *TypeController) DeleteType(ctx *gin.Context) *response.Response {
 	id := utils.QueryInt(ctx, "id")
 	err := t.typeService.DeleteById(id)
-	if checkError(err, "Delete type error") {
-		deleteFailed(ctx)
-		return
+	if response.CheckError(err, "Delete type error") {
+		return response.ResponseDeleteFailed()
 	}
 
-	deleteSuccess(ctx)
+	return response.ResponseDeleteSuccess()
 }
 
-func (t *TypeController) UpdateType(ctx *gin.Context) {
+func (t *TypeController) UpdateType(ctx *gin.Context) *response.Response {
 	var tp model.TheType
 	err := ctx.ShouldBind(&tp)
-	if checkError(err, "Bind param error") {
-		operateFailed(ctx)
-		return
+	if response.CheckError(err, "Bind param error") {
+		return response.ResponseOperateFailed()
 	}
 
 	err = t.typeService.UpdateName(tp.Id, tp.Name)
-	if checkError(err, "Update type error") {
-		operateFailed(ctx)
-		return
+	if response.CheckError(err, "Update type error") {
+		return response.ResponseOperateFailed()
 	}
 
-	operateSuccess(ctx)
+	return response.ResponseOperateSuccess()
 }
 
-func (t *TypeController) AddType(ctx *gin.Context) {
+func (t *TypeController) AddType(ctx *gin.Context) *response.Response {
 	var tp model.TheType
 	ctx.ShouldBind(&tp)
 	err := t.typeService.AddType(tp.Name)
-	if checkError(err, "Add type error") {
-		operateFailed(ctx)
-		return
+	if response.CheckError(err, "Add type error") {
+		return response.ResponseOperateFailed()
 	}
 
-	operateSuccess(ctx)
+	return response.ResponseOperateSuccess()
 }

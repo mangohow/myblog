@@ -72,7 +72,7 @@ export default {
     methods: {
         getBlogList: async function() {
             const {data: res} = await this.$axios.get("/myblog/timeLine");
-            this.blogs = res.data;
+            this.blogs = res.data.length > 0 ? res.data[0] : this.blogs;
             this.blogsTotal = 0;
             for(let i = 0; i < this.blogs.length; i++) {
                 this.blogsTotal += this.blogs[i].length;

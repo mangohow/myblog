@@ -51,8 +51,17 @@ export default {
                 return
             }
             this.categories.shift()
-            res.categories.forEach((val) => {
-                const arr = res.data.filter((d) => {
+            let data
+            let categories
+            if (res.data.length > 1) {
+                data = res.data[0]
+                categories = res.data[1]
+            } else {
+                return
+            }
+
+            categories.forEach((val) => {
+                const arr = data.filter((d) => {
                     return d.categoryId === val.id
                 })
                 if (arr.length > 0) {
@@ -92,7 +101,7 @@ ul, li {
 }
 
 .center-area {
-    width: 70%;
+    width: 66%;
     background-color: rgba(255, 255, 255, .6);
     margin: 0 auto;
     border-radius: 5px;
@@ -123,12 +132,17 @@ ul, li {
     font-size: 20px;
 }
 
+ul {
+    padding-left: 20px;
+}
+
 ul li {
     float: left;
     list-style: none;
     margin-right: 30px;
     margin-top: 10px;
 }
+
 
 /*清除浮动*/
 .clear-fix::after {

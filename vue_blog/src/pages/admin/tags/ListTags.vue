@@ -29,7 +29,7 @@
             <!-- 分页区域 -->
              <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
             :current-page="queryInfo.pageNum" :page-sizes="[5, 8, 10, 12, 15]" :page-size="queryInfo.pageSize"
-            layout="total, sizes, prev, pager, next, jumper" :total="tags.total">
+            layout="total, sizes, prev, pager, next, jumper" :total="total">
             </el-pagination>
 
         </el-card>
@@ -49,10 +49,11 @@ export default {
             inputTag: "",
             inputTagId: 0,
             tags: [],
+            total: 0,
             addBtnDisabled: false,
             queryInfo: {
                 pageNum: 1,
-                pageSize: 5,
+                pageSize: 6,
             }
         }
     },
@@ -62,10 +63,9 @@ export default {
     methods: {
         getTagList: async function() {
             const{data: res} = await this.$axios.get("/admin/getPageTags", {params: this.queryInfo})
-            // console.log(res)
-            if(res.status == 1) {
-                this.tags = res.data;
-                this.tags.total = res.total
+            if(res.status == 1 && res.data.length > 1) {
+                this.tags = res.data[0];
+                this.total = res.data[1]
             } else {
                 this.$message.error("查询列表失败")
             }
@@ -80,9 +80,8 @@ export default {
             }
 
             const{data: res} = await this.$axios.get("/admin/checkTagExist", {params: {tagName:this.inputTag} });
-            //console.log(res)
             if(res.status == 1) {
-                if(res.data == true) {
+                if(res.data[0] == true) {
                     this.addBtnDisabled = true;
                 } else {
                     this.addBtnDisabled = false;
@@ -107,8 +106,15 @@ export default {
                 } else {
                     this.$message.error("删除失败");
                 }
-                this.getTagList();
-                //console.log("删除")
+                if (this.queryInfo.pageNum === Math.ceil(this.total / this.queryInfo.pageSize) && this.tags.length === 1) {
+                    this.queryInfo.pageNum -= 1
+                    if(this.queryInfo.pageNum <= 0) {
+                        this.queryInfo.pageNum = 1
+                        return
+                    }
+                }
+
+                await this.getTagList();
             }, () => {
                 this.$message({type: 'info', message: '已取消删除'});
             });

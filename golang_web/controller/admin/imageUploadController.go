@@ -1,9 +1,11 @@
 package admin
 
 import (
+	"blog_web/response"
 	"blog_web/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"net/http"
 	"strings"
 	"time"
@@ -28,7 +30,7 @@ func NewImageUploadRouter() *ImageUploadController {
 		blogImgPath:  "/images/blogImages/",
 		icon: "/images/icons/",
 	}
-	p := utils.GlobalServerConf.Server.ImagePath
+	p := viper.GetString("server.imagePath")
 	if(strings.HasSuffix(p, "/")) {
 		ipr.baseImagePath = p[:len(p) - 1]
 	} else {
@@ -41,7 +43,7 @@ func NewImageUploadRouter() *ImageUploadController {
 // 上传博客首图
 func (ir *ImageUploadController) UploadImage(ctx *gin.Context) {
 	_, netpath, err := uploadImage(ctx, ir.baseImagePath, ir.firstPicPath)
-	if checkError(err, "Upload image error") {
+	if response.CheckError(err, "Upload image error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
@@ -52,7 +54,7 @@ func (ir *ImageUploadController) UploadImage(ctx *gin.Context) {
 // 上传博客中的图片
 func (ir *ImageUploadController) UploadBlogImage(ctx *gin.Context) {
 	_, netpath, err := uploadImage(ctx, ir.baseImagePath, ir.blogImgPath)
-	if checkError(err, "Upload blog image error") {
+	if response.CheckError(err, "Upload blog image error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
@@ -63,7 +65,7 @@ func (ir *ImageUploadController) UploadBlogImage(ctx *gin.Context) {
 // 上传图标
 func (ir *ImageUploadController) UploadIcon(ctx *gin.Context) {
 	_, netpath, err := uploadImage(ctx, ir.baseImagePath, ir.icon)
-	if checkError(err, "Upload icon error") {
+	if response.CheckError(err, "Upload icon error") {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
@@ -84,7 +86,7 @@ func uploadImage(ctx *gin.Context, imgPath, imgRelativePath string) (string, str
 	filename := fmt.Sprintf("%s_%d%s", fp, now, suf)
 	dst := fmt.Sprintf("%s%s%s", imgPath, imgRelativePath, filename)
 	utils.Logger().Debug("dest path:%s", dst)
-	netPath := fmt.Sprintf("%s%s%s", utils.GlobalServerConf.Server.ImageBaseUrl, imgRelativePath, filename)
+	netPath := fmt.Sprintf("%s%s%s", viper.GetString("server.imageBaseUrl"), imgRelativePath, filename)
 	utils.Logger().Debug("net path:%s", netPath)
 	utils.Logger().Debug("image base url:%s", imgPath)
 	err = ctx.SaveUploadedFile(file, dst)

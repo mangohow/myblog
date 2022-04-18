@@ -60,7 +60,7 @@
             <!-- 分页区域 -->
              <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
             :current-page="queryInfo.pageNum" :page-sizes="[8, 10, 12, 15]" :page-size="queryInfo.pageSize"
-            layout="total, sizes, prev, pager, next, jumper" :total="blogs.total">
+            layout="total, sizes, prev, pager, next, jumper" :total="total">
             </el-pagination>
         </el-card>
     </div>
@@ -78,6 +78,7 @@ export default {
             types: [],
             selectedType: "",
             blogs: [],
+            total: 0,
             queryInfo: {          //获取博客列表的数据
                 pageNum: 1,
                 pageSize: 8,
@@ -110,8 +111,12 @@ export default {
 
             const{data: res} = await this.$axios.get("/admin/searchBlogs",{params: this.queryInfo});
             if(res.status === 1) {
-                this.blogs = [...res.data];
-                this.blogs.total = res.count
+                if (res.data.length > 0) {
+                    this.blogs = [...res.data[0]];
+                }
+                if (res.data.length > 1) {
+                    this.total = res.data[1]
+                }
             } else {
                 this.$message.error("查询失败,请重新查询");
             }
@@ -122,7 +127,7 @@ export default {
             if(change === true) {
                 const{data: res} = await this.$axios.get("/admin/getAllTypes");
                 if(res.status === 1) {
-                    this.types = res.data;
+                    this.types = res.data.length > 0 ? res.data[0] : [];
                 } else {
                     this.$message.error(res.message);
                 }
@@ -133,7 +138,10 @@ export default {
             const item = this.types.find(item => {
                 return item.name === name
             });
-            this.queryInfo.typeId = item.id;
+
+            if (item) {
+                this.queryInfo.typeId = item.id;
+            }
         },
         handleEdit: function(id) {
             this.$router.push({
@@ -156,6 +164,14 @@ export default {
                 } else {
                     this.$message.error("删除失败");
                 }
+                if (this.queryInfo.pageNum === Math.ceil(this.total / this.queryInfo.pageSize) && this.blogs.length === 1) {
+                    this.queryInfo.pageNum -= 1
+                    if(this.queryInfo.pageNum <= 0) {
+                        this.queryInfo.pageNum = 1
+                        return
+                    }
+                }
+
                 //刷新博客列表
                 await this.getBlogList();
             }, () => {

@@ -86,9 +86,11 @@ export default {
                 this.$message.error("搜索失败，请重试！")
                 return
             }
-            if (res.data) {
-                this.searchResult = res.data
-                this.total = res.data.length
+            if (res.data.length > 0) {
+                this.searchResult = res.data[0]
+                if (res.data.length > 1) {
+                    this.total = res.data.length
+                }
             }
             this.showResult = true
         },

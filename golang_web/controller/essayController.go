@@ -2,6 +2,7 @@ package controller
 
 import (
 	"blog_web/db/service"
+	"blog_web/response"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,12 +16,11 @@ func NewEssayRouter() *EssayController {
 	}
 }
 
-func (e *EssayController) EssayList(ctx *gin.Context) {
+func (e *EssayController) EssayList(ctx *gin.Context) *response.Response {
 	essays, err := e.essayService.GetAll()
-	if checkError(err, "Get Essay List") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "Get Essay List") {
+		return response.ResponseQueryFailed()
 	}
 
-	querySuccess(ctx, essays)
+	return response.ResponseQuerySuccess(essays)
 }

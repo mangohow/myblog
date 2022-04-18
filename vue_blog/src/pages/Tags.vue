@@ -120,7 +120,7 @@ export default {
         async getTagList(flag) {
             const {data: res} = await this.$axios.get("/myblog/tagList");
             if(res.status === 1) {
-                this.tags = res.data;
+                this.tags = res.data.length > 0 ? res.data[0] : this.tags;
             }
 
             if (flag) {
@@ -134,13 +134,14 @@ export default {
             this.queryInfo.tagId = id;
             const {data: res} = await this.$axios.get("/myblog/tagBlogList", {params: this.queryInfo});
             if(res.status === 1) {
-                this.blogDetails = res.data;
+                this.blogDetails = res.data.length > 0 ? res.data[0] : this.blogDetails;
             } else {
                 this.$message.error("获取博客失败，请重试")
                 return
             }
 
-            this.pages = Math.ceil(res.count / this.queryInfo.pageSize);
+            const count = res.data.length > 1 ? res.data[1] : 0
+            this.pages = Math.ceil(count / this.queryInfo.pageSize);
             if (this.pages <= 0) {
                 this.pages = 1
             }

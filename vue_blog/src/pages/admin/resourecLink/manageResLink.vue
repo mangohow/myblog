@@ -132,17 +132,25 @@ export default {
                 this.$message.error("获取列表失败，请重试！")
                 return
             }
-            if(!res.data || !res.categories) {
+
+            let links, categories, count
+            if (res.data.length > 2 ) {
+                links = res.data[0]
+                categories = res.data[1]
+                count = res.data[2]
+            } else {
+                this.$message.error("获取列表失败，请重试！")
                 return
             }
-            this.total = res.count
-            this.categories = res.categories
+
+            this.total = count
+            this.categories = categories
             const m = new Map()
             this.links.splice(0, this.links.length)
-            res.categories.forEach((val => {
+            categories.forEach((val => {
                 m.set(val.id, val.name)
             }))
-            res.data.forEach((val) => {
+            links.forEach((val) => {
                 this.links.push({...val, category: m.get(val.categoryId)})
             })
         },
@@ -152,7 +160,7 @@ export default {
                 this.$message.error("获取列表失败，请重试！")
                 return
             }
-            this.categories = res.data
+            this.categories = res.data.length > 0 ? res.data[0] : []
         },
         changeCategory(name) {
             this.selectedCategory = name
@@ -186,6 +194,14 @@ export default {
                 } else {
                     this.$message.success("删除成功！")
                 }
+                if (this.queryInfo.pageNum === Math.ceil(this.total / this.queryInfo.pageSize) && this.links.length === 1) {
+                    this.queryInfo.pageNum -= 1
+                    if(this.queryInfo.pageNum <= 0) {
+                        this.queryInfo.pageNum = 1
+                        return
+                    }
+                }
+
                 //刷新列表
                 await this.getLinkList();
             }, () => {

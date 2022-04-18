@@ -62,9 +62,10 @@ export default {
                 this.$message.error("获取列表失败，请重试！")
                 return
             }
+            const data = res.data.length > 0 ? res.data[0] : []
             this.essays.splice(0, this.essays.length)
-            this.essays.push(...res.data)
-            this.total = res.count
+            this.essays.push(...data)
+            this.total = res.data.length > 1 ? res.data[1] : 0
         },
         handleAdd() {
             this.dialogFormVisible = true
@@ -81,13 +82,22 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(async () => {
-                //删除博客
+                //删除
                 const {data:res} = await this.$axios.delete("/admin/deleteEssay", {params: {id: id}});
+                console.log(res)
                 if (res.status !== 401) {
                     this.$message.error("删除失败，请重试！")
                 } else {
                     this.$message.success("删除成功！")
                 }
+                if (this.queryInfo.pageNum === Math.ceil(this.total / this.queryInfo.pageSize) && this.essays.length === 1) {
+                    this.queryInfo.pageNum -= 1
+                    if(this.queryInfo.pageNum <= 0) {
+                        this.queryInfo.pageNum = 1
+                        return
+                    }
+                }
+
                 //刷新列表
                 await this.getEssayList();
             }, () => {

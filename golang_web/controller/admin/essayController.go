@@ -3,6 +3,7 @@ package admin
 import (
 	"blog_web/db/service"
 	"blog_web/model"
+	"blog_web/response"
 	"blog_web/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -19,66 +20,60 @@ func NewEssayRouter() *EssayController {
 	}
 }
 
-func (e *EssayController) EssayList(ctx *gin.Context) {
+func (e *EssayController) EssayList(ctx *gin.Context) *response.Response  {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
 	essays, err := e.essayService.GetLimited(pageNum, pageSize)
-	if checkError(err, "Get essays error") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "Get essays error") {
+		return response.ResponseQueryFailed()
 	}
 	count, _ := e.essayService.GetCount()
-	result := utils.ResponseResult(utils.QUERY_SUCCESS, essays)
-	result["count"] = count
-	ctx.JSON(http.StatusOK, result)
+
+	return response.ResponseQuerySuccess(essays, count)
 }
 
-func (e *EssayController) AddEssay(ctx *gin.Context) {
+func (e *EssayController) AddEssay(ctx *gin.Context) *response.Response {
 	var essay model.Essay
 	err := ctx.ShouldBind(&essay)
-	if checkError(err, "Bind param error") {
+	if response.CheckError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
-		return
+		return nil
 	}
 
 	essay.CreateTime = time.Now()
 	err = e.essayService.AddEssay(&essay)
-	if checkError(err, "Add essay error") {
-		operateFailed(ctx)
-		return
+	if response.CheckError(err, "Add essay error") {
+		return response.ResponseOperateFailed()
 	}
 
-	operateSuccess(ctx)
+	return response.ResponseOperateSuccess()
 }
 
-func (e *EssayController) DeleteEssay(ctx *gin.Context) {
+func (e *EssayController) DeleteEssay(ctx *gin.Context) *response.Response {
 	id := utils.QueryInt(ctx, "id")
 	if (id <= 0) {
-		deleteFailed(ctx)
-		return
+		return response.ResponseDeleteFailed()
 	}
 	err := e.essayService.DeleteEssay(id)
-	if checkError(err, "Delete essay error") {
-		deleteFailed(ctx)
-		return
+	if response.CheckError(err, "Delete essay error") {
+		return response.ResponseDeleteFailed()
 	}
 
-	deleteSuccess(ctx)
+	return response.ResponseDeleteSuccess()
 }
 
-func (e *EssayController) UpdateEssay(ctx *gin.Context) {
+func (e *EssayController) UpdateEssay(ctx *gin.Context) *response.Response {
 	var essay model.Essay
 	err := ctx.ShouldBind(&essay)
-	if checkError(err, "Bind param error") {
+	if response.CheckError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
-		return
+		return nil
 	}
 
 	err = e.essayService.UpdateEssay(&essay)
-	if checkError(err, "Update essay error") {
-		operateFailed(ctx)
-		return
+	if response.CheckError(err, "Update essay error") {
+		return response.ResponseOperateFailed()
 	}
 
-	operateSuccess(ctx)
+	return response.ResponseOperateSuccess()
 }

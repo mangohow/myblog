@@ -1,6 +1,9 @@
 package utils
 
-import "blog_web/utils/logger"
+import (
+	"blog_web/utils/logger"
+	"github.com/spf13/viper"
+)
 
 /*
 * @Author: mgh
@@ -15,12 +18,12 @@ func Logger() *logger.Logger {
 }
 
 func CreateLogger() {
-	if GlobalServerConf.Log.ToFile {
-		logg = logger.NewFileLogger(GlobalServerConf.Log.Filepath,
-			GlobalServerConf.Log.Filename,
-			GlobalServerConf.Log.Level,
+	if viper.GetBool("log.toFile") {
+		logg = logger.NewFileLogger(viper.GetString("log.filepath"),
+			viper.GetString("log.filename"),
+			viper.GetString("log.level"),
 		)
 	} else {
-		logg = logger.NewLogger(GlobalServerConf.Log.Level)
+		logg = logger.NewLogger(viper.GetString("log.level"))
 	}
 }

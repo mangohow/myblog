@@ -29,7 +29,7 @@
             <!-- 分页区域 -->
              <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
             :current-page="queryInfo.pageNum" :page-sizes="[5, 8, 10, 12, 15]" :page-size="queryInfo.pageSize"
-            layout="total, sizes, prev, pager, next, jumper" :total="types.total">
+            layout="total, sizes, prev, pager, next, jumper" :total="total">
             </el-pagination>
 
         </el-card>
@@ -49,6 +49,7 @@ export default {
             inputType: "",
             inputTypeId: 0,
             types: [],
+            total: 0,
             addBtnDisabled: false,
             queryInfo: {
                 pageNum: 1,
@@ -62,9 +63,9 @@ export default {
     methods: {
         getTypeList: async function() {
             const{data: res} = await this.$axios.get("/admin/getPageTypes", {params: this.queryInfo})
-            if(res.status == 1) {
-                this.types = res.data;
-                this.types.total = res.total
+            if(res.status == 1 && res.data.length > 1) {
+                this.types = res.data[0];
+                this.total = res.data[1]
             } else {
                 this.$message.error("查询列表失败")
             }
@@ -80,7 +81,7 @@ export default {
 
             const{data: res} = await this.$axios.get("/admin/checkTypeExist", {params: {typeName:this.inputType} });
             if(res.status == 1) {
-                if(res.data == true) {
+                if(res.data[0] == true) {
                     this.addBtnDisabled = true;
                 } else {
                     this.addBtnDisabled = false;
@@ -105,7 +106,15 @@ export default {
                 } else {
                     this.$message.error("删除失败");
                 }
-                this.getTypeList();
+                if (this.queryInfo.pageNum === Math.ceil(this.total / this.queryInfo.pageSize) && this.types.length === 1) {
+                    this.queryInfo.pageNum -= 1
+                    if(this.queryInfo.pageNum <= 0) {
+                        this.queryInfo.pageNum = 1
+                        return
+                    }
+                }
+
+                await this.getTypeList();
             }, () => {
                 this.$message({type: 'info', message: '已取消删除'});
             });

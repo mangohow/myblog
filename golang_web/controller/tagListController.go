@@ -2,9 +2,9 @@ package controller
 
 import (
 	"blog_web/db/service"
+	"blog_web/response"
 	"blog_web/utils"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 /*
@@ -26,29 +26,25 @@ func NewTagListRouter() *TagListController {
 }
 
 // 标签页获取所有的标签
-func (t *TagListController) GetTagList(ctx *gin.Context) {
+func (t *TagListController) GetTagList(ctx *gin.Context) *response.Response {
 	tags, err := t.tagService.GetAllTags()
-	if checkError(err, "Get tags error") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "Get tags error") {
+		return response.ResponseQueryFailed()
 	}
 
-	querySuccess(ctx, tags)
+	return response.ResponseQuerySuccess(tags)
 }
 
 // 标签页根据标签ID获取博客
-func (t *TagListController) GetBlogListByTagId(ctx *gin.Context) {
+func (t *TagListController) GetBlogListByTagId(ctx *gin.Context) *response.Response {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "8")
 	id := utils.QueryInt(ctx, "tagId")
 
 	blogs, i, err := t.blogService.GetBlogsByTagId(id, pageNum, pageSize)
-	if checkError(err, "get blogs error") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "get blogs error") {
+		return response.ResponseQueryFailed()
 	}
 
-	result := utils.ResponseResult(utils.QUERY_SUCCESS, blogs)
-	result["count"] = i
-	ctx.JSON(http.StatusOK, result)
+	return response.ResponseQuerySuccess(blogs, i)
 }

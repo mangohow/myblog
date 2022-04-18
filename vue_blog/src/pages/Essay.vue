@@ -51,9 +51,16 @@ export default {
                 return
             }
 
-            let prev = dayjs(res.data[0].createTime).format("YYYY")
+            let data
+            if (res.data.length > 0) {
+                data = res.data[0]
+            } else {
+                return
+            }
+
+            let prev = dayjs(data[0].createTime).format("YYYY")
             let years = []
-            res.data.forEach((val, index) => {
+            data.forEach((val, index) => {
                 if(index === 0) {
                     years.push({
                         count: 1,
@@ -77,7 +84,7 @@ export default {
             years.forEach((val) => {
                 this.list.push({
                     year: val.year,
-                    essays: res.data.splice(0, val.count)
+                    essays: data.splice(0, val.count)
                 })
             })
         },

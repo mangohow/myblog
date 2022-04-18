@@ -47,7 +47,7 @@ export default {
         async getTagList() {
             const {data: res} = await this.$axios.get("/myblog/tagList");
             if(res.status === 1) {
-                this.tags = res.data;
+                this.tags = res.data.length > 0 ? res.data[0] : this.tags;
             } else {
                 this.$message.warning("获取标签列表失败！")
             }

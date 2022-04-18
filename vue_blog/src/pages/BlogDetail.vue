@@ -195,12 +195,12 @@ export default {
     },
     methods: {
         getBlogDetails: async function() {
-            var blogId = this.$route.query.id
+            let blogId = this.$route.query.id;
             blogId = parseInt(blogId);
             const {data: res} = await this.$axios.get("/myblog/detailedBlog", {params: {id: blogId}});
             if(res.status === 1) {
-                this.blog = res.data;
-                this.tags = res.tags
+                this.blog = res.data.length > 0 ? res.data[0] : this.blog;
+                this.tags = res.data.length > 1 ? res.data[1] : this.tags;
                 var hljs = require('highlight.js');
                 var md = require('markdown-it')({
                                     html: true,
@@ -258,7 +258,7 @@ export default {
         getCommentList: async function() {
             const {data: res} = await this.$axios.get("/myblog/commentList", {params: {id: this.blog.id}});
             if(res.status === 1) {
-                this.commentList = res.data;
+                this.commentList = res.data.length > 0 ? res.data[0] : this.commentList;
             }
         },
         checkEmail: function() {

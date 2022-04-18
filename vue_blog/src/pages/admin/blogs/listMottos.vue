@@ -64,8 +64,9 @@ export default {
                 this.$message.error("获取列表失败，请重试！")
                 return
             }
+            const data = res.data.length > 0 ? res.data[0] : []
             this.mottos.splice(0, this.mottos.length)
-            this.mottos.push(...res.data)
+            this.mottos.push(...data)
         },
         dateFormat(d) {
             return dayjs(d).format("YYYY-MM-DD HH:mm:ss")

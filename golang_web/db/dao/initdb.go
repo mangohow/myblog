@@ -1,11 +1,12 @@
 package dao
 
 import (
-	"blog_web/utils"
+	_ "blog_web/utils"
 	"context"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"github.com/spf13/viper"
 	"time"
 )
 
@@ -18,13 +19,17 @@ import (
 var sqldb *sqlx.DB
 var Sqldb *sqlx.DB
 
-//var conf = &utils.MysqlConf{
-//	DataSourceName: "root:mgh99999@(192.168.226.128:3306)/blog?charset=utf8mb4&parseTime=true&loc=Local",
-//	MaxOpenConns:   20,
-//	MaxIdleConns:   10,
-//}
+type MysqlConf struct {
+	DataSourceName string `json:"data_source_name"`
+	MaxOpenConns   uint32 `json:"max_open_conns"`
+	MaxIdleConns   uint32 `json:"max_idle_conns"`
+}
 
-var conf = &utils.GlobalServerConf.Mysql
+var conf = &MysqlConf{
+	DataSourceName: viper.GetString("mysql.dataSourceName"),
+	MaxOpenConns:   viper.GetUint32("mysql.maxOpenConns"),
+	MaxIdleConns:   viper.GetUint32("mysql.maxIdleConns"),
+}
 
 func init() {
 	fmt.Println("mysql conf:", conf)

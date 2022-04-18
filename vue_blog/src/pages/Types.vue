@@ -124,7 +124,7 @@ export default {
         getTypeList: async function() {
             const {data: res} = await this.$axios.get("/myblog/typeList");
             if(res.status === 1) {
-                this.types = res.data;
+                this.types = res.data.length > 0 ? res.data[0] : this.types;
                 this.types.sort((prev, next) => {
                     return next.count - prev.count
                 })
@@ -137,13 +137,14 @@ export default {
             this.queryInfo.typeId = id;
             const {data: res} = await this.$axios.get("/myblog/typeBlogList", {params: this.queryInfo});
             if(res.status === 1) {
-                this.blogDetails = res.data;
+                this.blogDetails = res.data.length > 0 ? res.data[0] : this.blogDetails;
             } else {
                 this.$message.error("获取博客失败，请重试！")
                 return
             }
 
-            this.pages = Math.ceil(res.count / this.queryInfo.pageSize);
+            const count = res.data.length > 1 ? res.data[1] : 0
+            this.pages = Math.ceil(count / this.queryInfo.pageSize);
             if (this.pages <= 0) {
                 this.pages = 1
             }

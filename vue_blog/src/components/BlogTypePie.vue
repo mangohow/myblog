@@ -54,7 +54,11 @@ export default {
                 return
             }
 
-            const arr = res.data.map(({count, name}) => {
+            if (res.data.length <= 0) {
+                return
+            }
+
+            const arr = res.data[0].map(({count, name}) => {
                 return {value: count, name: name}
             })
             options.series[0].data = [...arr]

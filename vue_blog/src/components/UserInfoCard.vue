@@ -34,7 +34,7 @@ export default {
                 nickname: "",
                 tagCount: 20,
                 github: "https://www.baidu.com",
-                csdn: "https://www.baidu.com"
+                csdn: "https://www.baidu.com "
             },
         }
     },
@@ -48,11 +48,16 @@ export default {
             if(res.status !== 1) {
                 this.$message.warning("获取用户信息失败！")
             }
-            this.userInfo.avatar = res.data.avatar
-            this.userInfo.nickname = res.data.nickname
-            this.userInfo.github = res.data.github
-            this.userInfo.csdn = res.data.csdn
-            this.userInfo.tagCount = res.tagCount
+            if (res.data.length > 0) {
+                const data = res.data[0]
+                this.userInfo.avatar = data.avatar
+                this.userInfo.nickname = data.nickname
+                this.userInfo.github = data.github
+                this.userInfo.csdn = data.csdn
+                if (res.data.length > 1){
+                    this.userInfo.tagCount = res.data[1]
+                }
+            }
         },
     },
     created() {

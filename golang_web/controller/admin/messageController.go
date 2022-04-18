@@ -3,6 +3,7 @@ package admin
 import (
 	"blog_web/db/service"
 	"blog_web/model"
+	"blog_web/response"
 	"blog_web/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -18,34 +19,30 @@ func NewMessageRouter() *MessageController {
 	}
 }
 
-func (m *MessageController) MessageList(ctx *gin.Context) {
+func (m *MessageController) MessageList(ctx *gin.Context) *response.Response {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
 	messages, count, err := m.msgService.GetPageMessage(pageNum, pageSize)
-	if checkError(err, "Get messages error") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "Get messages error") {
+		return response.ResponseQueryFailed()
 	}
 
-	result := utils.ResponseResult(utils.QUERY_SUCCESS, messages)
-	result["count"] = count
-	ctx.JSON(http.StatusOK, result)
+	return response.ResponseQuerySuccess(messages, count)
 }
 
-func (m *MessageController) UpdateStatus(ctx *gin.Context) {
+func (m *MessageController) UpdateStatus(ctx *gin.Context) *response.Response {
 	var msg model.Message
 	err := ctx.ShouldBind(&msg)
-	if checkError(err, "Bind param error") {
+	if response.CheckError(err, "Bind param error") {
 		ctx.Status(http.StatusInternalServerError)
-		return
+		return nil
 	}
 
 	err = m.msgService.UpdateMsgStatus(&msg)
-	if checkError(err, "Update message status error") {
-		operateFailed(ctx)
-		return
+	if response.CheckError(err, "Update message status error") {
+		return response.ResponseOperateFailed()
 	}
 
-	operateSuccess(ctx)
+	return response.ResponseOperateSuccess()
 }
 

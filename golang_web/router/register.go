@@ -7,97 +7,98 @@ import (
 )
 
 func Register(engine *gin.Engine) {
-	registerBlogRouters(engine)
-	registerBlogManageRouter(engine)
+	e := NewEngine(engine)
+	registerBlogRouters(e)
+	registerBlogManageRouter(e)
 }
 
-func registerBlogRouters(engine *gin.Engine) {
+func registerBlogRouters(engine *Engine) {
 	homeRouter := controller.NewHomeRouter()
-	blogGroup := engine.Group("/api/myblog")
+	blogGroup := NewRouterGroup(engine.Group("/api/myblog"))
 	{
-		blogGroup.GET("/blogLists", homeRouter.HomeListBlogs)
-		blogGroup.GET("/userInfo", homeRouter.GetHomePageUInfo)
-		blogGroup.GET("/bgs", homeRouter.GetBgImages)
-		blogGroup.GET("/newBlogs", homeRouter.GetNewBlogs)
-		blogGroup.GET("/hotBlogs", homeRouter.GetHotBlogs)
-		blogGroup.GET("/mottos", homeRouter.GetMottos)
-		blogGroup.GET("/detailedBlog", homeRouter.GetDetailedBlog)
-		blogGroup.GET("/commentList", homeRouter.GetCommentList)
-		blogGroup.POST("/publishComment", homeRouter.PublishComment)
-		blogGroup.GET("/search", homeRouter.SearchBlog)
+		blogGroup.Get("/blogLists", homeRouter.HomeListBlogs)
+		blogGroup.Get("/userInfo", homeRouter.GetHomePageUInfo)
+		blogGroup.Get("/bgs", homeRouter.GetBgImages)
+		blogGroup.Get("/newBlogs", homeRouter.GetNewBlogs)
+		blogGroup.Get("/hotBlogs", homeRouter.GetHotBlogs)
+		blogGroup.Get("/mottos", homeRouter.GetMottos)
+		blogGroup.Get("/detailedBlog", homeRouter.GetDetailedBlog)
+		blogGroup.Get("/commentList", homeRouter.GetCommentList)
+		blogGroup.Post("/publishComment", homeRouter.PublishComment)
+		blogGroup.Get("/search", homeRouter.SearchBlog)
 	}
 
 	typeListRouter := controller.NewTypeListRouter()
 	{
-		blogGroup.GET("/typeList", typeListRouter.GetTypeList)
-		blogGroup.GET("/typeBlogList", typeListRouter.GetBlogListByTypeid)
+		blogGroup.Get("/typeList", typeListRouter.GetTypeList)
+		blogGroup.Get("/typeBlogList", typeListRouter.GetBlogListByTypeid)
 	}
 
 	tagListRouter := controller.NewTagListRouter()
 	{
-		blogGroup.GET("/tagList", tagListRouter.GetTagList)
-		blogGroup.GET("/tagBlogList", tagListRouter.GetBlogListByTagId)
+		blogGroup.Get("/tagList", tagListRouter.GetTagList)
+		blogGroup.Get("/tagBlogList", tagListRouter.GetBlogListByTagId)
 	}
 
 	timeLineRouter := controller.NewTimeLineRouter()
 	{
-		blogGroup.GET("/timeLine", timeLineRouter.GetTimeLinedBlogs)
-		blogGroup.GET("/staticsBlog", timeLineRouter.GetGroupedBlogs)
+		blogGroup.Get("/timeLine", timeLineRouter.GetTimeLinedBlogs)
+		blogGroup.Get("/staticsBlog", timeLineRouter.GetGroupedBlogs)
 	}
 
 	resourceLibRouter := controller.NewResourceLibRouter()
 	{
-		blogGroup.GET("/links", resourceLibRouter.LinkList)
+		blogGroup.Get("/links", resourceLibRouter.LinkList)
 	}
 
 	leaveMessageRouter := controller.NewLeaveMessageRouter()
 	{
-		blogGroup.POST("/leaveMsg", leaveMessageRouter.LeaveMessage)
-		blogGroup.GET("/displayMsg", leaveMessageRouter.DisplayMessage)
+		blogGroup.Post("/leaveMsg", leaveMessageRouter.LeaveMessage)
+		blogGroup.Get("/displayMsg", leaveMessageRouter.DisplayMessage)
 	}
 
 	essayRouter := controller.NewEssayRouter()
 	{
-		blogGroup.GET("/essayList", essayRouter.EssayList)
+		blogGroup.Get("/essayList", essayRouter.EssayList)
 	}
 }
 
-func registerBlogManageRouter(engine *gin.Engine) {
+func registerBlogManageRouter(engine *Engine) {
 	loginRouter := admin.NewLoginRouter()
-	engine.POST("/api/admin/login", loginRouter.Login)
+	engine.Post("/api/admin/login", loginRouter.Login)
 
-	adminGroup := engine.Group("/api/admin")
+	adminGroup := NewRouterGroup(engine.Group("/api/admin"))
 	adminGroup.Use(admin.LoginAuthenticationMiddleware())
 	blogRouter := admin.NewBlogRouter()
 	{
-		adminGroup.GET("/searchBlogs", blogRouter.SearchBlogs)
-		adminGroup.DELETE("/deleteBlog", blogRouter.DeleteBlog)
-		adminGroup.GET("/getFullBlog", blogRouter.GetFullBlog)
-		adminGroup.PUT("/updateBlog", blogRouter.AddBlog)
-		adminGroup.GET("/mottoList", blogRouter.MottoList)
-		adminGroup.POST("addMotto", blogRouter.AddMotto)
-		adminGroup.PUT("/updateMotto", blogRouter.UpdateMotto)
-		adminGroup.DELETE("/deleteMotto", blogRouter.DeleteMotto)
+		adminGroup.Get("/searchBlogs", blogRouter.SearchBlogs)
+		adminGroup.Delete("/deleteBlog", blogRouter.DeleteBlog)
+		adminGroup.Get("/getFullBlog", blogRouter.GetFullBlog)
+		adminGroup.Put("/updateBlog", blogRouter.AddBlog)
+		adminGroup.Get("/mottoList", blogRouter.MottoList)
+		adminGroup.Post("addMotto", blogRouter.AddMotto)
+		adminGroup.Put("/updateMotto", blogRouter.UpdateMotto)
+		adminGroup.Delete("/deleteMotto", blogRouter.DeleteMotto)
 	}
 
 	typeRouter := admin.NewTypeRouter()
 	{
-		adminGroup.GET("/getAllTypes", typeRouter.GetAllTypes)
-		adminGroup.GET("/getPageTypes", typeRouter.GetOnePageTypes)
-		adminGroup.GET("/checkTypeExist", typeRouter.CheckTypeExist)
-		adminGroup.DELETE("/deleteType", typeRouter.DeleteType)
-		adminGroup.PUT("/updateType", typeRouter.UpdateType)
-		adminGroup.POST("/addType", typeRouter.AddType)
+		adminGroup.Get("/getAllTypes", typeRouter.GetAllTypes)
+		adminGroup.Get("/getPageTypes", typeRouter.GetOnePageTypes)
+		adminGroup.Get("/checkTypeExist", typeRouter.CheckTypeExist)
+		adminGroup.Delete("/deleteType", typeRouter.DeleteType)
+		adminGroup.Put("/updateType", typeRouter.UpdateType)
+		adminGroup.Post("/addType", typeRouter.AddType)
 	}
 
 	tagRouter := admin.NewTagRouter()
 	{
-		adminGroup.GET("/getAllTags", tagRouter.GetAllTags)
-		adminGroup.GET("/getPageTags", tagRouter.GetOnePageTags)
-		adminGroup.GET("/checkTagExist", tagRouter.CheckTagExist)
-		adminGroup.DELETE("/deleteTag", tagRouter.DeleteTag)
-		adminGroup.PUT("/updateTag", tagRouter.UpdateTag)
-		adminGroup.POST("/addTag", tagRouter.AddTag)
+		adminGroup.Get("/getAllTags", tagRouter.GetAllTags)
+		adminGroup.Get("/getPageTags", tagRouter.GetOnePageTags)
+		adminGroup.Get("/checkTagExist", tagRouter.CheckTagExist)
+		adminGroup.Delete("/deleteTag", tagRouter.DeleteTag)
+		adminGroup.Put("/updateTag", tagRouter.UpdateTag)
+		adminGroup.Post("/addTag", tagRouter.AddTag)
 	}
 
 	imageUploadRouter := admin.NewImageUploadRouter()
@@ -109,28 +110,28 @@ func registerBlogManageRouter(engine *gin.Engine) {
 
 	linksRouter := admin.NewLinksRouter()
 	{
-		adminGroup.GET("/pageLinks", linksRouter.LinksList)
-		adminGroup.DELETE("/deleteLink", linksRouter.DeleteLink)
-		adminGroup.POST("/addLink", linksRouter.AddLink)
-		adminGroup.PUT("/updateLink", linksRouter.UpdateLink)
-		adminGroup.GET("/categories", linksRouter.Categories)
-		adminGroup.DELETE("/deleteCategory", linksRouter.DeleteCategory)
-		adminGroup.POST("/addCategory", linksRouter.AddCategory)
-		adminGroup.PUT("/updateCategory", linksRouter.UpdateCategory)
+		adminGroup.Get("/pageLinks", linksRouter.LinksList)
+		adminGroup.Delete("/deleteLink", linksRouter.DeleteLink)
+		adminGroup.Post("/addLink", linksRouter.AddLink)
+		adminGroup.Put("/updateLink", linksRouter.UpdateLink)
+		adminGroup.Get("/categories", linksRouter.Categories)
+		adminGroup.Delete("/deleteCategory", linksRouter.DeleteCategory)
+		adminGroup.Post("/addCategory", linksRouter.AddCategory)
+		adminGroup.Put("/updateCategory", linksRouter.UpdateCategory)
 	}
 
 	essayRouter := admin.NewEssayRouter()
 	{
-		adminGroup.GET("/essayList", essayRouter.EssayList)
-		adminGroup.POST("/addEssay", essayRouter.AddEssay)
-		adminGroup.DELETE("/deleteEssay", essayRouter.DeleteEssay)
-		adminGroup.PUT("/updateEssay", essayRouter.UpdateEssay)
+		adminGroup.Get("/essayList", essayRouter.EssayList)
+		adminGroup.Post("/addEssay", essayRouter.AddEssay)
+		adminGroup.Delete("/deleteEssay", essayRouter.DeleteEssay)
+		adminGroup.Put("/updateEssay", essayRouter.UpdateEssay)
 	}
 
 	messageRouter := admin.NewMessageRouter()
 	{
-		adminGroup.GET("/msgList", messageRouter.MessageList)
-		adminGroup.PUT("/updateMsgStatus", messageRouter.UpdateStatus)
+		adminGroup.Get("/msgList", messageRouter.MessageList)
+		adminGroup.Put("/updateMsgStatus", messageRouter.UpdateStatus)
 	}
 }
 

@@ -3,9 +3,9 @@ package controller
 import (
 	"blog_web/db/service"
 	"blog_web/model"
+	"blog_web/response"
 	"blog_web/utils"
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"time"
 )
 
@@ -20,12 +20,11 @@ func NewLeaveMessageRouter() *LeaveMessageController {
 }
 
 
-func (l *LeaveMessageController) LeaveMessage(ctx *gin.Context) {
+func (l *LeaveMessageController) LeaveMessage(ctx *gin.Context) *response.Response {
 	var msg model.Message
 	err := ctx.ShouldBind(&msg)
-	if checkError(err, "Bind param error") {
-		operateFailed(ctx)
-		return
+	if response.CheckError(err, "Bind param error") {
+		return response.ResponseOperateFailed()
 	}
 
 	// 在使用nginx作为反向代理时，需要在nginx中进行配置，添加客户端的真实IP到头部，以便web服务器获取
@@ -34,25 +33,21 @@ func (l *LeaveMessageController) LeaveMessage(ctx *gin.Context) {
 	msg.Avatar = utils.RandomInt(28)
 	msg.CreateTime = time.Now()
 	err = l.messageService.AddMessage(&msg)
-	if checkError(err, "Add message error, msg:%s", msg.Ip) {
-		operateFailed(ctx)
+	if response.CheckError(err, "Add message error, msg:%s", msg.Ip) {
+		return response.ResponseOperateFailed()
 	} else {
-		operateSuccess(ctx)
+		return response.ResponseOperateSuccess()
 	}
 }
 
-func (l *LeaveMessageController) DisplayMessage(ctx *gin.Context) {
+func (l *LeaveMessageController) DisplayMessage(ctx *gin.Context) *response.Response {
 	pageNum := utils.DefaultQueryInt(ctx, "pageNum", "1")
 	pageSize := utils.DefaultQueryInt(ctx, "pageSize", "10")
 
 	messages, count, totalCount, err := l.messageService.GetDisplayMessage(pageNum, pageSize)
-	if checkError(err, "Get messages error") {
-		queryFailed(ctx)
-		return
+	if response.CheckError(err, "Get messages error") {
+		return response.ResponseQueryFailed()
 	}
 
-	result := utils.ResponseResult(utils.QUERY_SUCCESS, messages)
-	result["count"] = count
-	result["totalCount"] = totalCount
-	ctx.JSON(http.StatusOK, result)
+	return response.ResponseQuerySuccess(messages, count, totalCount)
 }

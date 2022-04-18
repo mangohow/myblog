@@ -86,11 +86,15 @@ export default {
             if(res.status !== 1) {
                 this.$message.warning("获取用户信息失败！")
             }
-            this.userInfo.avatar = res.data.avatar
-            this.userInfo.nickname = res.data.nickname
-            this.userInfo.github = res.data.github
-            this.userInfo.csdn = res.data.csdn
-            this.userInfo.email = res.data.email
+            if (res.data.length > 0) {
+                const data = res.data[0]
+                this.userInfo.avatar = data.avatar
+                this.userInfo.nickname = data.nickname
+                this.userInfo.github = data.github
+                this.userInfo.csdn = data.csdn
+                this.userInfo.email = data.email
+            }
+
         },
     }
 }
