@@ -5,7 +5,7 @@ server:
   imageBaseUrl: "http://localhost:8080"   # 图片的网络访问基路径
 
 mysql:
-  dataSourceName: "root:mgh99999@(192.168.44.100:3306)/blog?charset=utf8mb4&parseTime=true&loc=Local"
+  dataSourceName: "root:abc_123@(192.168.44.100:3306)/blog?charset=utf8mb4&parseTime=true&loc=Local"
   maxOpenConns: 20     # 连接池最大连接数
   maxIdleConns: 10     # 连接池最大空闲连接数
 
