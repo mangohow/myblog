@@ -26,7 +26,7 @@ ENV TZ=Asia/Shanghai
 WORKDIR /app
 
 COPY --from=builder /app/blog_web /app/
-COPY --from=builder /build/conf/conf.json /app/conf/
+COPY --from=builder /build/conf/application.yaml /app/conf/
 
 EXPOSE 8080
 
