@@ -1,0 +1,16 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  imagePath: "/app"              # 图片保存路径
+  imageBaseUrl: "http://localhost:8080"   # 图片的网络访问基路径
+
+mysql:
+  dataSourceName: "root:abc_123@(mysql:3306)/blog?charset=utf8mb4&parseTime=true&loc=Local"
+  maxOpenConns: 20     # 连接池最大连接数
+  maxIdleConns: 10     # 连接池最大空闲连接数
+
+log:
+  filepath: "./logs"
+  filename: "blog.log"
+  toFile: true
+  level: "DEBUG"

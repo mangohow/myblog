@@ -16,8 +16,8 @@ elif [ $1 = 'serve' ];then
 	if [ -z $2 ];then
 		exit 1
 	fi
-    #sed -i 's!^.*baseUrl.*$!    baseUrl="'$2'"!' ./frontend/blog/serverConfig.js
-	sed -i 's!^.*image_base_url.*$!    "image_base_url" : "'$2'"!' ./backend/conf/conf.json
+	
+	sed -i 's!^.*imageBaseUrl.*$!  imageBaseUrl: '$2'!' ./backend/conf/application.yaml
 	mkdir -p ~/blog/nginx/conf
 	mkdir -p ~/blog/nginx/html
 	cp -r ./frontend/blog/* ~/blog/nginx/html/
@@ -31,7 +31,6 @@ elif [ $1 = 'down' ];then
 	docker-compose down
 	rm -rf ~/blog
 elif [ $1 = 'build' ];then
-    #sed -i 's!^.*baseUrl.*$!    baseUrl="'$2'"!' ./frontend/blog/serverConfig.js
-	sed -i 's!^.*image_base_url.*$!    "image_base_url" : "'$2'"!' ./backend/conf/conf.json
+	sed -i 's!^.*imageBaseUrl.*$!  imageBaseUrl: '$2'!' ./backend/conf/application.yaml
 	docker-compose build
 fi
