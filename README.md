@@ -40,9 +40,14 @@
 
 步骤如下：
 
-1、将博客后端放入deploy/backend下
+1、将博客后端放入deploy/backend下，如果使用阿里云OSS需要修改conf/application.yaml中的配置
 
 目录如下：
+
+conf/  
+└──  application.yaml
+
+Dockerfile
 
 myblog/  
 ├── conf  

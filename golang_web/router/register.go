@@ -101,7 +101,9 @@ func registerBlogManageRouter(engine *Engine) {
 		adminGroup.Post("/addTag", tagRouter.AddTag)
 	}
 
-	imageUploadRouter := admin.NewImageUploadRouter()
+	// 可以选择使用本地服务器的图片存储或者阿里云OSS对象存储服务
+	//imageUploadRouter := admin.NewLocalImageUploadRouter()
+	imageUploadRouter := admin.NewAliOSSImageUploadRouter()
 	{
 		adminGroup.POST("/saveImages", imageUploadRouter.UploadBlogImage)
 	}

@@ -1,7 +1,7 @@
 server:
   host: "0.0.0.0"
   port: 8080
-  imagePath: "./"              # 图片保存路径
+  imagePath: "./"              # 图片保存路径，如果使用阿里云OSS，这个就没用了
   imageBaseUrl: "http://localhost:8080"   # 图片的网络访问基路径
 
 mysql:
@@ -12,5 +12,12 @@ mysql:
 log:
   filepath: "./logs"
   filename: "blog.log"
-  toFile: false
-  level: "DEBUG"
+  toFile: true
+  level: "INFO"
+
+aliOSS:
+  endPoint: "yourEndPoint"    # 注意：在填写endPoint时要使用带有bucketName的地址，否则会上传失败，例如：my-upload.oss-cn-beijing.aliyuncs.com，前面无需加http
+  accessKeyId: "yourAccessKeyId"
+  accessKeySecret: "yourAccessKeySecret"
+  bucket: "yourBucket"
+  maxImageSize: 5242880                  # 5M 上传的最大图片大小，如果大于该文件大小，将会对图片进行压缩

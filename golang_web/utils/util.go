@@ -7,11 +7,14 @@ package utils
  */
 
 import (
+	"bytes"
 	"errors"
-	"fmt"
 	"github.com/anthonynsimon/bild/imgio"
 	"github.com/anthonynsimon/bild/transform"
-	Path "path/filepath"
+	"image"
+	_ "image/jpeg"
+	_ "image/png"
+	"io"
 )
 
 // 提取路径中的路径名和后缀 "F:\test\img.jpg" ==> ("F:\test\img", ".jpg")
@@ -37,40 +40,40 @@ func ConvertPathSeparator(path string) string {
 	return string(strby)
 }
 
-// 该函数用于对图片进行缩放, 如果图像的宽带大于width，则不需要缩放
-// 返回值： string: 缩放后的图像名字，不带路径
-func ImageScale(path string, width int) (string, error) {
-	pref, suf := FileSuffixSplit(path)
-	if suf != ".jpg" && suf != ".jpeg" && suf != ".png" {
-		return "", errors.New("Unsupported image type.")
+
+// ImageScale: 对图片进行缩放
+func ImageScale(reader io.Reader, width int) (io.Reader, error) {
+	img, suf, err := image.Decode(reader)
+	if err != nil {
+		return nil, err
+	}
+	Logger().Debug("image type:%s", suf)
+	if suf != "jpg" && suf != "jpeg" && suf != "png" {
+		return nil, errors.New("Unsupported image type.")
 	}
 
-	image, err := imgio.Open(path)
-	if err != nil {
-		return "", err
-	}
-	bounds := image.Bounds()
+	bounds := img.Bounds()
 	x := bounds.Dx()
 	if x <= width {
-		return "", nil
+		return nil, nil
 	}
 
 	y := bounds.Dy()
 	height := (width * y) / x
 
-	resizedImage := transform.Resize(image, width, height, transform.Linear)
-
-	resizedImgPath := fmt.Sprintf("%s%s%s", pref, "_resized", suf)
+	resizedImage := transform.Resize(img, width, height, transform.Linear)
+	Logger().Debug("%v", resizedImage.Bounds().Size())
+	buf := bytes.NewBuffer(nil)
 	var encoder imgio.Encoder
-	if suf == ".jpg" || suf == ".jpeg" {
+	if suf == "jpg" || suf == "jpeg" {
 		encoder = imgio.JPEGEncoder(100)
-	} else if suf == ".png" {
+	} else if suf == "png" {
 		encoder = imgio.PNGEncoder()
 	}
-	err = imgio.Save(resizedImgPath, resizedImage, encoder)
+	err = encoder(buf, resizedImage)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return Path.Base(resizedImgPath), nil
+	return buf, nil
 }
