@@ -1,32 +1,34 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Index from "../pages"
-import Home from "../pages/Home.vue"
-import BlogDetail from "../pages/BlogDetail.vue"
-import Types from "../pages/Types.vue"
-import Tags from "../pages/Tags.vue"
-import TimeLine from "../pages/TimeLine.vue"
-import About from "../pages/About.vue"
-import Essay from "../pages/Essay"
-import MsgBoard from "../pages/MsgBoard"
-import PhotoWall from "../pages/PhotoWall"
-import ResourceLib from "../pages/ResourceLib"
-import NotFound from "../components/error/NOTFOUND.vue"
-import InternalError from "../components/error/INTERNALERROR.vue"
 
 
-import Login from "../pages/admin/Login"
-import AdminHome from '../pages/admin/Home'
-import Welcome from "../pages/admin/Welcome.vue"
-import ListBlogs from "../pages/admin/blogs/ListBlogs.vue"
-import ListTypes from "../pages/admin/types/ListTypes.vue"
-import ListTags from "../pages/admin/tags/ListTags.vue"
-import AddBlog from "../pages/admin/blogs/AddBlog.vue"
-import ListImages from "../pages/admin/images/ListImages"
-import ManageMessage from "../pages/admin/messages/ManageMessage";
-import ListMottos from "../pages/admin/blogs/listMottos";
-import ManageResLink from "../pages/admin/resourecLink/manageResLink";
-import ManageEssay from "../pages/admin/essay/ManageEssay";
+const Index = () => import( "../pages")
+const Home = () => import( "../pages/Home.vue")
+const BlogDetail = () => import( "../pages/BlogDetail.vue")
+const Types = () => import( "../pages/Types.vue")
+const Tags = () => import( "../pages/Tags.vue")
+const TimeLine = () => import( "../pages/TimeLine.vue")
+const About = () => import( "../pages/About.vue")
+const Essay = () => import( "../pages/Essay")
+const MsgBoard = () => import( "../pages/MsgBoard")
+const PhotoWall = () => import( "../pages/PhotoWall")
+const ResourceLib = () => import( "../pages/ResourceLib")
+const NotFound = () => import( "../components/error/NOTFOUND.vue")
+const InternalError = () => import( "../components/error/INTERNALERROR.vue")
+
+
+const Login = () => import("../pages/admin/Login")
+const AdminHome  = () => import('../pages/admin/Home')
+const Welcome  = () => import( "../pages/admin/Welcome.vue")
+const ListBlogs  = () => import( "../pages/admin/blogs/ListBlogs.vue")
+const ListTypes  = () => import( "../pages/admin/types/ListTypes.vue")
+const ListTags  = () => import( "../pages/admin/tags/ListTags.vue")
+const AddBlog  = () => import( "../pages/admin/blogs/AddBlog.vue")
+const ListImages  = () => import( "../pages/admin/images/ListImages")
+const ManageMessage  = () => import( "../pages/admin/messages/ManageMessage")
+const ListMottos  = () => import( "../pages/admin/blogs/listMottos")
+const ManageResLink  = () => import( "../pages/admin/resourecLink/manageResLink")
+const ManageEssay  = () => import( "../pages/admin/essay/ManageEssay")
 
 Vue.use(VueRouter)
 
